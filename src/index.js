@@ -1,3 +1,5 @@
+// import _ from "lodash";
+
 const ship = (length, hitCount, sunk) => ({
   length,
   hitCount,
@@ -25,6 +27,3 @@ const isSunk = (shipLength, hitCount, sunk) => {
   }
   return shipIsSunk;
 };
-
-module.exports = updateHitCount;
-module.exports = isSunk;
