@@ -22,9 +22,4 @@ class Ship {
   }
 }
 
-const ship1 = new Ship("carrier", 3, 0);
-ship1.updateHitCount(2);
-
-console.log(ship1.isSunk());
-
 module.exports = Ship;
