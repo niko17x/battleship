@@ -1,59 +1,53 @@
 const Ship = require("./ships");
 
-// Functions and helpers:
-const helperPlaceShip = (values, coord) => {
-  if (values.includes(coord)) {
-    return true;
-  }
-  return false;
-};
-
-// Returns the index position of X:
-const getIndexPos = (coord, alphaList) => {
-  const xValue = coord.x;
-  return alphaList.indexOf(xValue);
-};
+const targetCoord = { x: "b", y: 3 }; // User targeted coord (example).
 
 // Main class:
 class GameBoard {
-  constructor(ship) {
-    this.ship = ship;
-    this.coord = [];
+  constructor() {
+    this.ships = [];
+    this.missedShots = [];
   }
 
-  // Get placement of ship (x: a-j), (y: 1-10):
-  placeShip(x, y) {
-    const xInBound = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
-    const yInBound = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const xValues = helperPlaceShip(xInBound, x);
-    const yValues = helperPlaceShip(yInBound, y);
+  // Function that returns the ship instance coordinates:
+  placeShip(ship) {
+    this.ships.push(ship);
+    return ship.coord;
+  }
 
-    // Validate user coord input is within range.
-    if (xValues && yValues) {
-      const firstCoord = { x, y }; // User input coordinates.
-      this.coord.push(firstCoord);
-      const alphaIndex = getIndexPos(firstCoord, xInBound); // Get index pos. of first coord x value.
-
-      // Increment coord of x value for vertical ship placement
-      for (let i = 1; i < this.ship.shipLength; i++) {
-        this.coord.push({
-          x: xInBound[alphaIndex + i],
-          y,
-        });
+  // Return the shipClass if target coord has matching ship coord:
+  receiveAttack(target) {
+    //* Use GameBoard.receiveAttack() to call this function.
+    let hitShip = false;
+    this.ships.forEach((obj) => {
+      // Within each ship object, check each coordinate.
+      for (let i = 0; i < obj.coord.length; i++) {
+        // If targetCoord matches existing coord, record the ship that was hit:
+        if (target.x === obj.coord[i].x && target.y === obj.coord[i].y) {
+          hitShip = obj.shipClass;
+          this.markHit(hitShip); // ship.updateHitCount(1);
+        }
       }
-    } else {
-      return null; // Out of bounds coord input.
-    }
+      if (hitShip === false && !this.missedShots.includes(target)) {
+        this.missedShots.push(target);
+      }
+    });
+    return hitShip; // => returns shipClass.
   }
 
-  getLen() {
-    console.log(this.ship.shipLength);
+  // Takes shipClass from receiveAttack()
+  markHit(shipClass) {
+    // Iterate through 'ships' and find the class name that matches:
+    const findHitShip = this.ships.find((prop) => prop.shipClass === shipClass);
+    return findHitShip.updateHitCount(1);
   }
 }
-
-module.exports = GameBoard;
-
-const carrier = new Ship("carrier", 4, 0);
-const board = new GameBoard(carrier);
-board.placeShip("z", 10);
-console.log(board.coord);
+const gameBoard = new GameBoard();
+const carrier = new Ship("Carrier", 5, 0);
+carrier.updateCoord("a", 2);
+const battle = new Ship("Battle", 4, 0);
+battle.updateCoord("b", 1);
+gameBoard.placeShip(battle);
+gameBoard.placeShip(carrier);
+gameBoard.receiveAttack(targetCoord);
+console.log(gameBoard);
