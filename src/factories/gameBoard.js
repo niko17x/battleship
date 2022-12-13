@@ -1,12 +1,12 @@
 const Ship = require("./ships");
 
-const targetCoord = { x: "b", y: 3 }; // User targeted coord (example).
+const targetCoord = (alpha, num) => ({ x: alpha, y: num }); // User targeted coord (example only);
 
 // Main class:
 class GameBoard {
   constructor() {
     this.ships = [];
-    this.missedShots = [];
+    this.missedShots = []; // Tracks missed attacks.
   }
 
   // Function that returns the ship instance coordinates:
@@ -28,26 +28,55 @@ class GameBoard {
           this.markHit(hitShip); // ship.updateHitCount(1);
         }
       }
+      // Push missed coord:
       if (hitShip === false && !this.missedShots.includes(target)) {
         this.missedShots.push(target);
       }
     });
-    return hitShip; // => returns shipClass.
+    return hitShip;
   }
 
   // Takes shipClass from receiveAttack()
   markHit(shipClass) {
     // Iterate through 'ships' and find the class name that matches:
     const findHitShip = this.ships.find((prop) => prop.shipClass === shipClass);
-    return findHitShip.updateHitCount(1);
+    const hitTargetShip = findHitShip.updateHitCount(1);
+    // Check if the ship has sunk:
+    findHitShip.isSunk();
+    return hitTargetShip;
+  }
+
+  // Validate if all ships have been sunk:
+  allShipsSunk() {
+    let allSunk;
+    this.ships.forEach((ship) => {
+      if (ship.sunk === true) {
+        allSunk = true;
+      } else {
+        allSunk = false;
+      }
+    });
+    return allSunk;
   }
 }
 const gameBoard = new GameBoard();
+
 const carrier = new Ship("Carrier", 5, 0);
 carrier.updateCoord("a", 2);
+carrier.updateHitCount(5);
+carrier.isSunk();
+
 const battle = new Ship("Battle", 4, 0);
 battle.updateCoord("b", 1);
+
 gameBoard.placeShip(battle);
 gameBoard.placeShip(carrier);
-gameBoard.receiveAttack(targetCoord);
-console.log(gameBoard);
+// gameBoard.receiveAttack(targetCoord);
+
+gameBoard.receiveAttack(targetCoord("b", 1));
+gameBoard.receiveAttack(targetCoord("b", 2));
+gameBoard.receiveAttack(targetCoord("b", 3));
+gameBoard.receiveAttack(targetCoord("b", 4));
+
+// console.log(gameBoard);
+console.log(gameBoard.allShipsSunk());
