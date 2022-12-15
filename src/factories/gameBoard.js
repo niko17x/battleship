@@ -1,4 +1,7 @@
-const Ship = require("./ships");
+import { Ship } from "./ships.js";
+import { Player } from "./player.js";
+// const Ship = require("./ships");
+// const Player = require("./player");
 
 const targetCoord = (alpha, num) => ({ x: alpha, y: num }); // User targeted coord (example only);
 
@@ -16,10 +19,12 @@ class GameBoard {
   }
 
   // Return the shipClass if target coord has matching ship coord:
-  receiveAttack(target) {
+  // 'target' takes object coord => i.e. { x:'a', y: 2}
+  receiveAttack(defaultShips, target) {
     //* Use GameBoard.receiveAttack() to call this function.
     let hitShip = false;
-    this.ships.forEach((obj) => {
+    // 'defaultShips' parameter for => playerOne.ships => 'playerOne' is instance of Player class.
+    defaultShips.forEach((obj) => {
       // Within each ship object, check each coordinate.
       for (let i = 0; i < obj.coord.length; i++) {
         // If targetCoord matches existing coord, record the ship that was hit:
@@ -36,10 +41,12 @@ class GameBoard {
     return hitShip;
   }
 
-  // Takes shipClass from receiveAttack()
-  markHit(shipClass) {
+  // Gets shipClass from method receiveAttack() and updates the hit count of that ship:
+  static markHit(defaultShip, shipClass) {
     // Iterate through 'ships' and find the class name that matches:
-    const findHitShip = this.ships.find((prop) => prop.shipClass === shipClass);
+    const findHitShip = defaultShip.find(
+      (prop) => prop.shipClass === shipClass
+    );
     const hitTargetShip = findHitShip.updateHitCount(1);
     // Check if the ship has sunk:
     findHitShip.isSunk();
@@ -59,24 +66,12 @@ class GameBoard {
     return allSunk;
   }
 }
+
+// module.exports = GameBoard;
+export { GameBoard };
+
 const gameBoard = new GameBoard();
 
-const carrier = new Ship("Carrier", 5, 0);
-carrier.updateCoord("a", 2);
-carrier.updateHitCount(5);
-carrier.isSunk();
-
-const battle = new Ship("Battle", 4, 0);
-battle.updateCoord("b", 1);
-
-gameBoard.placeShip(battle);
-gameBoard.placeShip(carrier);
-// gameBoard.receiveAttack(targetCoord);
-
-gameBoard.receiveAttack(targetCoord("b", 1));
-gameBoard.receiveAttack(targetCoord("b", 2));
-gameBoard.receiveAttack(targetCoord("b", 3));
-gameBoard.receiveAttack(targetCoord("b", 4));
-
-// console.log(gameBoard);
-console.log(gameBoard.allShipsSunk());
+// const player = new Player("bro");
+// player.defaultShips();
+// player.receiveAttack(player.ships, targetCoord("b", 2)); => Method does NOT exist in Player class.

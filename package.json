@@ -2,6 +2,7 @@
   "name": "battleship",
   "version": "1.0.0",
   "description": "Replicate the iconic battleship game.",
+  "type": "module",
   "private": true,
   "scripts": {
     "test": "jest",
