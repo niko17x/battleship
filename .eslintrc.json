@@ -73,6 +73,8 @@
      "prefer-const": ["error", {
       "ignoreReadBeforeAssign": true,
       "destructuring": "all"
-      }]
+      }],
+      // Allow for '.js' extensions during module import => i.e.: import { ships } from '.ships.js':
+      "import/extensions": [<severity>, "always"]
    }
 }
