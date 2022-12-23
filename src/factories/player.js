@@ -8,14 +8,24 @@ class Player {
     this.moves = [];
   }
 
-  // Set default ships for start of game:
+  // Add default ships for start of game:
   defaultShips() {
     const carrier = new Ship("Carrier", 5, 0);
-    const battleShip = new Ship("Battle Ship", 4, 0);
+    const battleShip = new Ship("Battle-Ship", 4, 0);
     const destroyer = new Ship("Destroyer", 3, 0);
-    const submarine = new Ship("Submarine", 3, 0);
-    const patrolBoat = new Ship("Patrol Boat", 2, 0);
-    this.ships.push(carrier, battleShip, destroyer, submarine, patrolBoat);
+    const submarine1 = new Ship("Submarine", 2, 0);
+    const submarine2 = new Ship("Submarine", 2, 0);
+    const patrolBoat1 = new Ship("Patrol-Boat", 1, 0);
+    const patrolBoat2 = new Ship("Patrol-Boat", 1, 0);
+    this.ships.push(
+      carrier,
+      battleShip,
+      destroyer,
+      submarine1,
+      submarine2,
+      patrolBoat1,
+      patrolBoat2
+    );
   }
 
   // Get player target coordinate:
@@ -27,13 +37,6 @@ class Player {
 
   // Run Gameboard.receiveAttack() => method returns a shipClass if there is a hit => go through Player.ships and find matching shipClass to 'take damage' and record hit.
 }
-
-// module.exports = Player;
 export { Player };
 
-const playerOne = new Player("Player One");
-const playerTwo = new Player("Player Two");
-
-playerOne.defaultShips(); // Adds default ships to player.
-// playerOne.attackCoord("hello");
-playerOne.attackCoord();
+//! TEST AREA:

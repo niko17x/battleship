@@ -23,6 +23,7 @@ class Ship {
     this.sunk = false;
   }
 
+  // Checks for valid coord input and updates the ship coord array:
   updateCoord(x, y) {
     const xInBound = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
     const yInBound = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -78,8 +79,6 @@ class Ship {
     this.coord.placeCoord();
   }
 }
-
-// module.exports = Ship;
 export { Ship };
 
 // ! TEST AREA:

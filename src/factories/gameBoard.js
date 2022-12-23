@@ -1,7 +1,5 @@
 import { Ship } from "./ships.js";
 import { Player } from "./player.js";
-// const Ship = require("./ships");
-// const Player = require("./player");
 
 const targetCoord = (alpha, num) => ({ x: alpha, y: num }); // User targeted coord (example only);
 
@@ -65,13 +63,26 @@ class GameBoard {
     });
     return allSunk;
   }
-}
 
-// module.exports = GameBoard;
+  // Create the game board:
+  createBoard() {
+    const columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+
+    for (let i = 0; i < columns.length; i++) {
+      const row = document.createElement("div");
+      row.classList.add("alpha");
+      row.id = columns[i];
+      document.querySelector(".board").appendChild(row);
+      for (let j = 1; j < 11; j++) {
+        const col = document.createElement("div");
+        col.classList.add("num");
+        col.id = j;
+        // col.id = `${columns[i]}${j}`;
+        row.appendChild(col);
+      }
+    }
+  }
+}
 export { GameBoard };
 
-const gameBoard = new GameBoard();
-
-// const player = new Player("bro");
-// player.defaultShips();
-// player.receiveAttack(player.ships, targetCoord("b", 2)); => Method does NOT exist in Player class.
+//! TEST AREA:
