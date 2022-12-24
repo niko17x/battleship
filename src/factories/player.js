@@ -13,10 +13,10 @@ class Player {
     const carrier = new Ship("Carrier", 5, 0);
     const battleShip = new Ship("Battle-Ship", 4, 0);
     const destroyer = new Ship("Destroyer", 3, 0);
-    const submarine1 = new Ship("Submarine", 2, 0);
-    const submarine2 = new Ship("Submarine", 2, 0);
-    const patrolBoat1 = new Ship("Patrol-Boat", 1, 0);
-    const patrolBoat2 = new Ship("Patrol-Boat", 1, 0);
+    const submarine1 = new Ship("Submarine-1", 2, 0);
+    const submarine2 = new Ship("Submarine-2", 2, 0);
+    const patrolBoat1 = new Ship("Patrol-Boat-1", 1, 0);
+    const patrolBoat2 = new Ship("Patrol-Boat-2", 1, 0);
     this.ships.push(
       carrier,
       battleShip,
