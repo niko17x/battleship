@@ -4,10 +4,75 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="main.js" defer></script>
+  <script src="../src/index.js" type="module" defer></script>
+  <!-- <link rel="stylesheet" href="style.css"> -->
   <title>Document</title>
 </head>
 <body>
+
+  <div class="container">
+
+    <div class="board">
+      <div class="player-1-board"></div>
+      <div class="player-2-board"></div>
+    </div>
+
+    <div class="display-ships">
+    </div>
+
+
+  </div>
+
   
 </body>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(143, 169, 195);
+  }
+
+  .container {
+    display: grid;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    border: 3px solid blue;
+  }
+
+  .alpha {
+    display: flex;
+  }
+  .num {
+    border: 1px solid black;
+    height: 15px;
+    width: 15px;
+  }
+
+  .active {
+    background-color: red;
+  }
+
+  .space {
+    height: 15px;
+    width: 15px;
+    border: 1px solid blue;
+    display: inline-block;
+  }
+
+  .player-one-board,
+  .player-two-board {
+    display: inline-block
+  }
+
+
+</style>
 </html>
