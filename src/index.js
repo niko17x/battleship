@@ -2,8 +2,7 @@
 // import { create } from "/lodash.js";
 import { GameBoard } from "./factories/gameBoard.js";
 import { Player } from "./factories/player.js";
-
-// Start of game loop => Create players and board:
+import { Ship } from "./factories/ships.js";
 
 // Create player instances:
 const playerOne = new Player("Player One");
@@ -18,10 +17,10 @@ playerOne.defaultShips();
 playerTwo.defaultShips();
 
 // Creating a board:
-playerOneBoard.createBoard();
-// playerTwoBoard.createBoard();
+playerOneBoard.createBoard(".player-1-board");
+playerTwoBoard.createBoard(".player-2-board");
 
-// Create and display spaces that occupy each ship length:
+// Takes players ships and displays on page as 'div spaces' based on ship length to indicate the available ships:
 const displayShips = (player) => {
   player.ships.forEach((obj) => {
     const container = document.querySelector(".container");
@@ -35,17 +34,14 @@ const displayShips = (player) => {
     container.append(ship);
   });
 };
+// displayShips(playerOne);
 
-// ! TEST:
+// * Deal with default placement of ships (non-randomized or selected coordinates):
+// Ships = [Carrier, Battle-Ship, Destroyer, Submarine-1, Submarine-2, Patrol-Boat-1, Patrol-Boat-2];
 
-// Populate the game board with predetermined coordinates for each ship:
-// ? How can I place just one ship in the game board (Just focus on vertical placement)?
-// ? How do I indicate that a ship is placed inside the game board? => Change the color of the div (make it transparent).
-
-// Todo: Find a way to mark/"place" a ship on the board by changing the div color:
-
+// Iterate through each child node of given parent node and if matching child.id found, add '.active' class to it:
 // parentDiv => pass in the parent div id. // id => pass in the child div id you're looking for.
-const childDiv = (parentId, id) => {
+const checkChildId = (parentId, id) => {
   const parentDiv = document.getElementById(parentId); // Get the parent div id.
   for (const child of parentDiv.children) {
     if (child.id === id) {
@@ -54,19 +50,64 @@ const childDiv = (parentId, id) => {
   }
 };
 
-const foo = (selectParent, selectChild) => {
+// Valid parent and child id parameters allows the targeted div's to add 'active' class using function - checkChildId(); :
+const markBoard = (selectParentId, selectChildId) => {
   const alphaClass = document.querySelectorAll(".alpha");
   alphaClass.forEach((div) => {
-    if (div.id === selectParent) {
-      if (childDiv(div.id, selectChild)) {
-        div.classList.add("active");
-      }
+    // If matching parent id found... :
+    if (div.id === selectParentId) {
+      return checkChildId(div.id, selectChildId);
     }
   });
 };
-foo("D", "5");
-foo("D", "6");
-foo("D", "7");
-foo("E", "7");
-foo("F", "7");
-foo("G", "7");
+
+// Sets coordinate positions based on parameter input:
+const setShipCoord = (player, shipType, x, y) => {
+  player.ships.forEach((obj) => {
+    // If param shipType has a matching ship, run updateCoord() method:
+    if (obj.shipClass === shipType) {
+      obj.updateCoord(x, y);
+    }
+  });
+};
+// setShipCoord(playerOne, "Carrier", "A", 5); // => i.e.
+
+// Places ships in their default board coordinate positions:
+const defaultShipPos = (player) => {
+  setShipCoord(player, "Carrier", "B", 1);
+  setShipCoord(player, "Battle-Ship", "H", 3);
+  setShipCoord(player, "Destroyer", "J", 6);
+  setShipCoord(player, "Submarine-1", "D", 7);
+  setShipCoord(player, "Submarine-2", "G", 3);
+  setShipCoord(player, "Patrol-Boat-1", "A", 10);
+  setShipCoord(player, "Patrol-Boat-2", "E", 3);
+};
+defaultShipPos(playerOne);
+defaultShipPos(playerTwo);
+
+// Takes ships (** w/ existing coords) and places them on game board:
+const placeShipOnBoard = (player) => {
+  player.ships.forEach((ship) => {
+    ship.coord.forEach((coord) => {
+      const x = coord.x.toString(); // Parent id => alphas.
+      const y = coord.y.toString(); // Child id => integers.
+      markBoard(x, y);
+    });
+  });
+};
+placeShipOnBoard(playerOne);
+placeShipOnBoard(playerTwo);
+
+const printWindow = () => {
+  window.addEventListener("click", (e) => {
+    console.log(e.target.parentNode.id, e.target.id);
+    // if (e.target.classList.contains("active")) { // => Div with '.active' class (ship occupied).
+    //   console.log(e.target);
+    // }
+  });
+};
+printWindow();
+
+// ! TEST:
+
+// Todo: Coordinate placements for player 2 is not registering b/c the coords A-J and 1-10 are the same for both player 1 board and player 2 board (they are referring to the exact same coordinates) => Must find a way differentiate them.
