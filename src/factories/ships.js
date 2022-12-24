@@ -25,7 +25,7 @@ class Ship {
 
   // Checks for valid coord input and updates the ship coord array:
   updateCoord(x, y) {
-    const xInBound = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
+    const xInBound = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
     const yInBound = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const xValues = helperPlaceShip(xInBound, x);
     const yValues = helperPlaceShip(yInBound, y);
@@ -82,3 +82,6 @@ class Ship {
 export { Ship };
 
 // ! TEST AREA:
+// const carrier = new Ship("carrier", 5, 0);
+// carrier.updateCoord("a", 1);
+// console.log(carrier.coord);
