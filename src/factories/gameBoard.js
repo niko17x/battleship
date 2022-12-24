@@ -65,14 +65,15 @@ class GameBoard {
   }
 
   // Create the game board:
-  createBoard() {
+  createBoard(playerBoard) {
     const columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
     for (let i = 0; i < columns.length; i++) {
       const row = document.createElement("div");
       row.classList.add("alpha");
       row.id = columns[i];
-      document.querySelector(".board").appendChild(row);
+      // playerBoard param allows DOM element to append to HTML element:
+      document.querySelector(playerBoard).appendChild(row);
       for (let j = 1; j < 11; j++) {
         const col = document.createElement("div");
         col.classList.add("num");
