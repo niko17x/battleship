@@ -4,6 +4,16 @@ import { GameBoard } from "./factories/gameBoard.js";
 import { Player } from "./factories/player.js";
 import { Ship } from "./factories/ships.js";
 
+const printWindow = () => {
+  window.addEventListener("click", (e) => {
+    console.log(e.target.parentNode.id, e.target.id);
+    // if (e.target.classList.contains("active")) { // => Div with '.active' class (ship occupied).
+    //   console.log(e.target);
+    // }
+  });
+};
+printWindow();
+
 // Create player instances:
 const playerOne = new Player("Player One");
 const playerTwo = new Player("Player Two");
@@ -39,28 +49,6 @@ const displayShips = (player) => {
 // * Deal with default placement of ships (non-randomized or selected coordinates):
 // Ships = [Carrier, Battle-Ship, Destroyer, Submarine-1, Submarine-2, Patrol-Boat-1, Patrol-Boat-2];
 
-// Iterate through each child node of given parent node and if matching child.id found, add '.active' class to it:
-// parentDiv => pass in the parent div id. // id => pass in the child div id you're looking for.
-const checkChildId = (parentId, id) => {
-  const parentDiv = document.getElementById(parentId); // Get the parent div id.
-  for (const child of parentDiv.children) {
-    if (child.id === id) {
-      child.classList.add("active");
-    }
-  }
-};
-
-// Valid parent and child id parameters allows the targeted div's to add 'active' class using function - checkChildId(); :
-const markBoard = (selectParentId, selectChildId) => {
-  const alphaClass = document.querySelectorAll(".alpha");
-  alphaClass.forEach((div) => {
-    // If matching parent id found... :
-    if (div.id === selectParentId) {
-      return checkChildId(div.id, selectChildId);
-    }
-  });
-};
-
 // Sets coordinate positions based on parameter input:
 const setShipCoord = (player, shipType, x, y) => {
   player.ships.forEach((obj) => {
@@ -74,7 +62,7 @@ const setShipCoord = (player, shipType, x, y) => {
 
 // Places ships in their default board coordinate positions:
 const defaultShipPos = (player) => {
-  setShipCoord(player, "Carrier", "B", 1);
+  setShipCoord(player, "Carrier", "A", 1);
   setShipCoord(player, "Battle-Ship", "H", 3);
   setShipCoord(player, "Destroyer", "J", 6);
   setShipCoord(player, "Submarine-1", "D", 7);
@@ -85,29 +73,32 @@ const defaultShipPos = (player) => {
 defaultShipPos(playerOne);
 defaultShipPos(playerTwo);
 
-// Takes ships (** w/ existing coords) and places them on game board:
-const placeShipOnBoard = (player) => {
+// Todo: Coordinate placements for player 2 is not registering b/c the coords A-J and 1-10 are the same for both player 1 board and player 2 board (they are referring to the exact same coordinates) => Must find a way differentiate the coord for player 1 and player 2.
+
+// Returns an array of each ship coordinate for selected player:
+const getLoc = (player) => {
+  let locations = [];
   player.ships.forEach((ship) => {
-    ship.coord.forEach((coord) => {
-      const x = coord.x.toString(); // Parent id => alphas.
-      const y = coord.y.toString(); // Child id => integers.
-      markBoard(x, y);
+    ship.coord.forEach((loc) => {
+      locations.push([loc.x, loc.y]);
+    });
+  });
+  return locations;
+};
+
+// Takes input from getLoc() function and uses data to place 'active' classes to div:
+const markBoard = (pBoard) => {
+  const parentDiv = document.querySelector(`.${pBoard}`);
+
+  getLoc(playerTwo).forEach((obj) => {
+    let getX = parentDiv.querySelector(`#${obj[0]}`);
+    getX.childNodes.forEach((item) => {
+      if (item.id === obj[1].toString()) {
+        item.classList.add("active");
+      }
     });
   });
 };
-placeShipOnBoard(playerOne);
-placeShipOnBoard(playerTwo);
 
-const printWindow = () => {
-  window.addEventListener("click", (e) => {
-    console.log(e.target.parentNode.id, e.target.id);
-    // if (e.target.classList.contains("active")) { // => Div with '.active' class (ship occupied).
-    //   console.log(e.target);
-    // }
-  });
-};
-printWindow();
-
-// ! TEST:
-
-// Todo: Coordinate placements for player 2 is not registering b/c the coords A-J and 1-10 are the same for both player 1 board and player 2 board (they are referring to the exact same coordinates) => Must find a way differentiate them.
+markBoard("player-2-board");
+markBoard("player-1-board");
