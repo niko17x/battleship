@@ -5,7 +5,7 @@ class Player {
   constructor(name) {
     this.name = name;
     this.ships = [];
-    this.moves = [];
+    this.moves = [{ hits: [] }, { misses: [] }];
   }
 
   // Add default ships for start of game:
