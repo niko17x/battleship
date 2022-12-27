@@ -12,7 +12,7 @@ const printWindow = () => {
     // }
   });
 };
-printWindow();
+// printWindow();
 
 // Create player instances:
 const playerOne = new Player("Player One");
@@ -73,8 +73,6 @@ const defaultShipPos = (player) => {
 defaultShipPos(playerOne);
 defaultShipPos(playerTwo);
 
-// Todo: Coordinate placements for player 2 is not registering b/c the coords A-J and 1-10 are the same for both player 1 board and player 2 board (they are referring to the exact same coordinates) => Must find a way differentiate the coord for player 1 and player 2.
-
 // Returns an array of each ship coordinate for selected player:
 const getLoc = (player) => {
   let locations = [];
@@ -99,6 +97,76 @@ const markBoard = (pBoard) => {
     });
   });
 };
-
 markBoard("player-2-board");
 markBoard("player-1-board");
+
+// Todo: Dealing with attacking coordinates based on user clicking on the div which in turn, edits the coords for the the affected ship.
+
+// Deal with taking player turns:
+let playerOneTurn = true;
+
+const togglePlayerTurn = () => {
+  if (playerOneTurn === true) {
+    playerOneTurn = false;
+  } else {
+    playerOneTurn = true;
+  }
+};
+
+// ? How can I properly record each players hits and misses on the game board. I need to add a hits/misses property inside the player.moves array to record them separately. At the moment, I am not able to push in an object with the coordinates.
+
+// Takes player turns attacking board and registers hits and misses to the correct player:
+const renderBoardClick = (playerTurn, e, playerBoard, player) => {
+  const getParent = e.target.parentNode.parentNode;
+  const getChildClass = e.target.classList;
+  if (playerTurn) {
+    if (getParent.classList.contains(playerBoard)) {
+      if (getChildClass.contains("active")) {
+        getChildClass.remove("active");
+        getChildClass.add("hit");
+        player.moves[0].hits.push([
+          recHits(e.target.parentNode.id, e.target.id),
+        ]);
+      } else {
+        // Log misses into a 'missed variable'.
+        player.moves[1].misses.push([
+          recMiss(e.target.parentNode.id, e.target.id),
+        ]);
+        console.log("Missed!");
+      }
+      // player.moves.push([e.target.parentNode.id, e.target.id]);
+      togglePlayerTurn();
+    }
+  }
+};
+
+// Event handler for function 'renderBoardClick()':
+document.querySelector(".board").addEventListener("click", (e) => {
+  renderBoardClick(playerOneTurn, e, "player-1-board", playerOne);
+  renderBoardClick(!playerOneTurn, e, "player-2-board", playerTwo);
+});
+
+// Accepts coord input and returns the shipClass (that was hit):
+const getHitShipClass = () => {
+  //
+};
+
+// Function => Takes input from renderBoardClick() (e.target.parentNode.id and e.target.id) and runs this function to ultimately return a hit or miss for the respective player:
+const recHits = (x, y) => {
+  // Account for a hit (record inside player.moves.hits):
+  return {
+    hits: [x, y],
+  };
+};
+
+const recMiss = (x, y) => {
+  //
+  return {
+    misses: [x, y],
+  };
+};
+
+playerOne.moves[0].hits.push(["B", 4]);
+playerOne.moves[0].hits.push(["A", 3]);
+playerOne.moves[1].misses.push(["Z", 10]);
+console.log(playerOne.moves);
