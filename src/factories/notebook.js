@@ -26,7 +26,51 @@ const ships = [
   },
 ];
 
-// Player 1 => place a coordinate to attack.
-// Player 2 turn.
-// Player 2 => place a coordinate to attack.
-// Player 1 turn.
+// Functions that are not being used but saved (just in case):
+// Takes ships (** w/ existing coords) and places them on game board:
+const placeShipOnBoard = (player) => {
+  player.ships.forEach((ship) => {
+    ship.coord.forEach((coord) => {
+      const x = coord.x.toString(); // Parent id => alphas.
+      const y = coord.y.toString(); // Child id => integers.
+      markBoard(x, y);
+    });
+  });
+};
+// placeShipOnBoard(playerOne);
+// placeShipOnBoard(playerTwo);
+
+// Iterate through each child node of given parent node and if matching child.id found, add '.active' class to it:
+// parentDiv => pass in the parent div id. // id => pass in the child div id you're looking for.
+const checkChildId = (parentId, id) => {
+  const parentDiv = document.getElementById(parentId); // Get the parent div id.
+  for (const child of parentDiv.children) {
+    if (child.id === id) {
+      child.classList.add("active");
+    }
+  }
+};
+
+// Valid parent and child id parameters allows the targeted div's to add 'active' class using function - checkChildId(); :
+const markBoard = (selectParentId, selectChildId) => {
+  const alphaClass = document.querySelectorAll(".alpha");
+  alphaClass.forEach((div) => {
+    // If matching parent id found... :
+    if (div.id === selectParentId) {
+      return checkChildId(div.id, selectChildId);
+    }
+  });
+};
+
+// Takes coords from getAttackCoord() function and checks if a ship is currently occupying the div coords:
+const isAttackCoordValid = (x, y) => {
+  playerOne.ships.forEach((ship) => {
+    ship.coord.forEach((coordinate) => {
+      // console.log(coordinate.x, coordinate.y);
+      if (coordinate.x === x && coordinate.y === y) {
+        console.log(coordinate);
+        return true; // Given coord is a hit.
+      }
+    });
+  });
+};
