@@ -100,7 +100,7 @@ const markBoard = (pBoard) => {
 markBoard("player-2-board");
 markBoard("player-1-board");
 
-// Todo: Dealing with attacking coordinates based on user clicking on the div which in turn, edits the coords for the the affected ship.
+//! Dealing with attacking coordinates based on user clicking on the div which in turn, edits the coords for the the affected ship.
 
 // Deal with taking player turns:
 let playerOneTurn = true;
@@ -117,27 +117,37 @@ const togglePlayerTurn = () => {
 
 // Takes player turns attacking board and registers hits and misses to the correct player:
 const renderBoardClick = (playerTurn, e, playerBoard, player) => {
-  const getParent = e.target.parentNode.parentNode;
+  const getParentNode = e.target.parentNode.parentNode;
   const getChildClass = e.target.classList;
   if (playerTurn) {
-    if (getParent.classList.contains(playerBoard)) {
+    // Player gets a 'hit' on opponent game board when targeted div contains 'active' class:
+    if (getParentNode.classList.contains(playerBoard)) {
       if (getChildClass.contains("active")) {
         getChildClass.remove("active");
         getChildClass.add("hit");
         player.moves[0].hits.push([
           recHits(e.target.parentNode.id, e.target.id),
         ]);
+        // Todo: Since target is a hit, account for the ship that was hit and update the hit count for said ship => Run method to check if the ship is sunk:
+
+        const hitShip = getHitShipClass(
+          player,
+          e.target.parentNode.id,
+          e.target.id
+        );
+
+        GameBoard.markHit(player.ships, hitShip);
       } else {
-        // Log misses into a 'missed variable'.
+        // Player misses and records targeted div to player.moves.miss:
         player.moves[1].misses.push([
           recMiss(e.target.parentNode.id, e.target.id),
         ]);
         console.log("Missed!");
       }
-      // player.moves.push([e.target.parentNode.id, e.target.id]);
       togglePlayerTurn();
     }
   }
+  // console.log(playerOne.ships);
 };
 
 // Event handler for function 'renderBoardClick()':
@@ -146,14 +156,8 @@ document.querySelector(".board").addEventListener("click", (e) => {
   renderBoardClick(!playerOneTurn, e, "player-2-board", playerTwo);
 });
 
-// Accepts coord input and returns the shipClass (that was hit):
-const getHitShipClass = () => {
-  //
-};
-
 // Function => Takes input from renderBoardClick() (e.target.parentNode.id and e.target.id) and runs this function to ultimately return a hit or miss for the respective player:
 const recHits = (x, y) => {
-  // Account for a hit (record inside player.moves.hits):
   return {
     hits: [x, y],
   };
@@ -166,7 +170,20 @@ const recMiss = (x, y) => {
   };
 };
 
-playerOne.moves[0].hits.push(["B", 4]);
-playerOne.moves[0].hits.push(["A", 3]);
-playerOne.moves[1].misses.push(["Z", 10]);
-console.log(playerOne.moves);
+// Accepts coord input and returns the shipClass (that was hit):
+const getHitShipClass = (player, x, y) => {
+  // Accepts the coords from renderBoardClick() function to find the same shipClass by iterating through all ships in the player default ships:
+  player.ships.forEach((ship) => {
+    ship.coord.forEach((loc) => {
+      if (loc.x === x && loc.y.toString() === y) {
+        console.log(ship.shipClass);
+        return ship.shipClass;
+      }
+    });
+  });
+};
+// getHitShipClass(playerOne, "H", 3);
+
+// GameBoard.markHit(playerOne.ships, "Carrier");
+// const bar = playerOne.ships.find((ship) => ship.shipClass === "Carrier");
+// console.log(bar);
