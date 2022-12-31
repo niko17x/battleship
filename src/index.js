@@ -113,9 +113,7 @@ const togglePlayerTurn = () => {
   }
 };
 
-// ? How can I properly record each players hits and misses on the game board. I need to add a hits/misses property inside the player.moves array to record them separately. At the moment, I am not able to push in an object with the coordinates.
-
-// Takes player turns attacking board and registers hits and misses to the correct player:
+// Takes player turns attacking board and registers hits and misses to the correct player class properties:
 const renderBoardClick = (playerTurn, e, playerBoard, player) => {
   const getParentNode = e.target.parentNode.parentNode;
   const getChildClass = e.target.classList;
@@ -125,52 +123,35 @@ const renderBoardClick = (playerTurn, e, playerBoard, player) => {
       if (getChildClass.contains("active")) {
         getChildClass.remove("active");
         getChildClass.add("hit");
-        player.moves[0].hits.push([
-          recHits(e.target.parentNode.id, e.target.id),
-        ]);
-        // Todo: Since target is a hit, account for the ship that was hit and update the hit count for said ship => Run method to check if the ship is sunk:
-        // console.log(e.target.parentNode.id, e.target.id);
-
+        player.moves[0].hits.push([e.target.parentNode.id, e.target.id]);
+        console.log(player.moves[0].hits);
         const hitShip = getHitShipClass(
           player,
           e.target.parentNode.id,
           e.target.id
         );
-
         GameBoard.markHit(player.ships, hitShip);
       } else {
-        // Player misses and records targeted div to player.moves.miss:
-        player.moves[1].misses.push([
-          recMiss(e.target.parentNode.id, e.target.id),
-        ]);
-        console.log("Missed!");
+        // Account for duplicate clicks on div's containing 'active/hit' classes:
+        player.missed(e.target.parentNode.id, e.target.id); // => pushes missed coord into player.move property.
+        if (
+          e.target.classList.contains("missed") ||
+          e.target.classList.contains("hit")
+        )
+          return;
+        e.target.classList.add("missed");
       }
       togglePlayerTurn();
     }
   }
   checkSunkShips(player);
-  console.log(playerOne.ships);
 };
 
 // Event handler for function 'renderBoardClick()':
 document.querySelector(".board").addEventListener("click", (e) => {
-  renderBoardClick(playerOneTurn, e, "player-1-board", playerOne);
-  renderBoardClick(!playerOneTurn, e, "player-2-board", playerTwo);
+  renderBoardClick(playerOneTurn, e, "player-2-board", playerOne);
+  renderBoardClick(!playerOneTurn, e, "player-1-board", playerTwo);
 });
-
-// Function => Takes input from renderBoardClick() (e.target.parentNode.id and e.target.id) and runs this function to ultimately return a hit or miss for the respective player:
-const recHits = (x, y) => {
-  return {
-    hits: [x, y],
-  };
-};
-
-const recMiss = (x, y) => {
-  //
-  return {
-    misses: [x, y],
-  };
-};
 
 // Takes x, y from renderBoardClick() function and locates ship (if any) and returns the shipClass to be used in another function:
 const getHitShipClass = (player, x, y) => {
@@ -187,8 +168,7 @@ const getHitShipClass = (player, x, y) => {
 };
 // getHitShipClass(playerOne, "H", "3");
 
-// Todo: Create a function that checks if a ship is sunk for each player /// If a ship is sunk...
-
+// Checks for every ship if it is 'sunk' and if sunk, the players ship will be edited to return a list of ships that are NOT yet sunk which effectively removes the sunk ship from the list of ships:
 const checkSunkShips = (player) => {
   player.ships.forEach((ship) => {
     if (ship.sunk) {
@@ -196,12 +176,3 @@ const checkSunkShips = (player) => {
     }
   });
 };
-
-// playerOne.ships.forEach((ship) => {
-//   if (ship.shipClass === "Carrier") {
-//     playerOne.ships = playerOne.ships.filter(
-//       (obj) => obj.shipClass !== "Carrier"
-//     );
-//   }
-// });
-// console.log(playerOne.ships);
