@@ -129,6 +129,7 @@ const renderBoardClick = (playerTurn, e, playerBoard, player) => {
           recHits(e.target.parentNode.id, e.target.id),
         ]);
         // Todo: Since target is a hit, account for the ship that was hit and update the hit count for said ship => Run method to check if the ship is sunk:
+        // console.log(e.target.parentNode.id, e.target.id);
 
         const hitShip = getHitShipClass(
           player,
@@ -147,7 +148,8 @@ const renderBoardClick = (playerTurn, e, playerBoard, player) => {
       togglePlayerTurn();
     }
   }
-  // console.log(playerOne.ships);
+  checkSunkShips(player);
+  console.log(playerOne.ships);
 };
 
 // Event handler for function 'renderBoardClick()':
@@ -170,20 +172,36 @@ const recMiss = (x, y) => {
   };
 };
 
-// Accepts coord input and returns the shipClass (that was hit):
+// Takes x, y from renderBoardClick() function and locates ship (if any) and returns the shipClass to be used in another function:
 const getHitShipClass = (player, x, y) => {
-  // Accepts the coords from renderBoardClick() function to find the same shipClass by iterating through all ships in the player default ships:
+  let targetShip;
   player.ships.forEach((ship) => {
     ship.coord.forEach((loc) => {
       if (loc.x === x && loc.y.toString() === y) {
-        console.log(ship.shipClass);
-        return ship.shipClass;
+        targetShip = ship.shipClass;
+        return;
       }
     });
   });
+  return targetShip;
 };
-// getHitShipClass(playerOne, "H", 3);
+// getHitShipClass(playerOne, "H", "3");
 
-// GameBoard.markHit(playerOne.ships, "Carrier");
-// const bar = playerOne.ships.find((ship) => ship.shipClass === "Carrier");
-// console.log(bar);
+// Todo: Create a function that checks if a ship is sunk for each player /// If a ship is sunk...
+
+const checkSunkShips = (player) => {
+  player.ships.forEach((ship) => {
+    if (ship.sunk) {
+      player.ships = player.ships.filter((shipObj) => shipObj !== ship);
+    }
+  });
+};
+
+// playerOne.ships.forEach((ship) => {
+//   if (ship.shipClass === "Carrier") {
+//     playerOne.ships = playerOne.ships.filter(
+//       (obj) => obj.shipClass !== "Carrier"
+//     );
+//   }
+// });
+// console.log(playerOne.ships);
