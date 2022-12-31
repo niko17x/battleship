@@ -14,6 +14,8 @@ const printWindow = () => {
 };
 // printWindow();
 
+let playGame = true;
+
 // Create player instances:
 const playerOne = new Player("Player One");
 const playerTwo = new Player("Player Two");
@@ -29,6 +31,16 @@ playerTwo.defaultShips();
 // Creating a board:
 playerOneBoard.createBoard(".player-1-board");
 playerTwoBoard.createBoard(".player-2-board");
+
+// Deal with taking player turns:
+let playerOneTurn = true;
+const togglePlayerTurn = () => {
+  if (playerOneTurn) {
+    playerOneTurn = false;
+  } else {
+    playerOneTurn = true;
+  }
+};
 
 // Takes players ships and displays on page as 'div spaces' based on ship length to indicate the available ships:
 const displayShips = (player) => {
@@ -46,7 +58,7 @@ const displayShips = (player) => {
 };
 // displayShips(playerOne);
 
-// * Deal with default placement of ships (non-randomized or selected coordinates):
+// *** Deal with default placement of ships (non-randomized or selected coordinates) ***
 // Ships = [Carrier, Battle-Ship, Destroyer, Submarine-1, Submarine-2, Patrol-Boat-1, Patrol-Boat-2];
 
 // Sets coordinate positions based on parameter input:
@@ -100,19 +112,7 @@ const markBoard = (pBoard) => {
 markBoard("player-2-board");
 markBoard("player-1-board");
 
-//! Dealing with attacking coordinates based on user clicking on the div which in turn, edits the coords for the the affected ship.
-
-// Deal with taking player turns:
-let playerOneTurn = true;
-
-const togglePlayerTurn = () => {
-  if (playerOneTurn === true) {
-    playerOneTurn = false;
-  } else {
-    playerOneTurn = true;
-  }
-};
-
+// *** Dealing with attacking coordinates based on user clicking on the div which in turn, edits the coords for the the affected ship. ***
 // Takes player turns attacking board and registers hits and misses to the correct player class properties:
 const renderBoardClick = (playerTurn, e, playerBoard, player) => {
   const getParentNode = e.target.parentNode.parentNode;
@@ -145,6 +145,7 @@ const renderBoardClick = (playerTurn, e, playerBoard, player) => {
     }
   }
   checkSunkShips(player);
+  areAllShipsSunk(player);
 };
 
 // Event handler for function 'renderBoardClick()':
@@ -175,4 +176,13 @@ const checkSunkShips = (player) => {
       player.ships = player.ships.filter((shipObj) => shipObj !== ship);
     }
   });
+};
+
+// If length of player ship property is 0, game is lost (sunk ships are filtered out):
+const areAllShipsSunk = (player) => {
+  // Since sunk ships will be removed from the property, check length:
+  if (player.ships.length === 0) {
+    console.log(`${player} has lost the game!`);
+  }
+  playGame = false;
 };
