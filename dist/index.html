@@ -12,12 +12,36 @@
 
   <div class="container">
 
-    <div class="board">
-      <div class="player-1-board"></div>
-      <div class="player-2-board"></div>
+    <div class="header">
+      <div class="title">
+        <h1>Battle Ship</h1>
+      </div>
+      <div class="display-rules">
+        Display Rules
+      </div>
+
     </div>
 
-    <div class="display-ships">
+    <div class="main">
+      <div class="board">
+        <div class="player-1-board"></div>
+        <div class="score-board">
+          <div class="score-text">Score:</div>
+          <div class="score-display">
+            <span class="player-1-score"></span>
+            |
+            <span class="player-2-score"></span>
+
+            <span class="display-winner"></span>
+            <button>Play Again?</button>
+        </div>
+        </div>
+        <div class="player-2-board"></div>
+      </div>
+  
+      <div class="display-ships">
+      </div>
+
     </div>
 
 
@@ -42,10 +66,51 @@
     display: grid;
   }
 
-  .board {
+  .header {
     display: grid;
-    grid-template-columns: repeat(2, auto);
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .display-rules {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .title {
+    font-size: 2.2rem;
+    text-align: center;
+    padding: 2rem;
+    grid-column-start: 2;
+
+  }
+
+  .board {
+    width: 100vw;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-content: space-evenly;
     border: 3px solid blue;
+    padding: 5rem;
+    gap: 4rem;
+  }
+
+  .score-board {
+    text-align: center;
+    font-size: 4rem;
+    position: relative;
+    bottom: 4rem;
+  }
+
+  .score-text {
+    font-weight: 900;
+    text-decoration: underline;
+  }
+
+  .player-2-board {
+    grid-column-start: 3;
   }
 
   .alpha {
@@ -53,12 +118,20 @@
   }
   .num {
     border: 1px solid black;
-    height: 15px;
-    width: 15px;
+    height: 2.5rem;
+    width: 2.5rem;
   }
 
   .active {
-    background-color: red;
+    background-color: white;
+  }
+
+  .hit {
+    background-color: purple;
+  }
+
+  .missed {
+    background-color: yellow;
   }
 
   .space {
