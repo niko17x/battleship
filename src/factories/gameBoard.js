@@ -7,7 +7,6 @@ const targetCoord = (alpha, num) => ({ x: alpha, y: num }); // User targeted coo
 class GameBoard {
   constructor() {
     this.ships = [];
-    this.missedShots = []; // Tracks missed attacks.
   }
 
   // Function that returns the ship instance coordinates:
@@ -49,6 +48,8 @@ class GameBoard {
     // Check if the ship has sunk:
     findHitShip.isSunk();
     return hitTargetShip;
+
+    //!
   }
 
   // Validate if all ships have been sunk:
