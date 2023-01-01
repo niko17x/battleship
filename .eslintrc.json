@@ -1,80 +1,80 @@
 {
-    "env": {
-        "browser": true,
-        "commonjs": true,
-        "es2021": true,
-        // Allows for 'test' and 'expect' KW during Jest testing:
-        "jest": true
-    },
-    "extends": ["airbnb-base", "prettier"],
-    "overrides": [{
+  "env": {
+      "browser": true,
+      "commonjs": true,
+      "es2021": true,
       // Allows for 'test' and 'expect' KW during Jest testing:
-      "files": [
-        "**/*/.spec.js",
-        "**/*.spec.jsx"
-      ]
+      "jest": true
+  },
+  "extends": ["airbnb-base", "prettier"],
+  "overrides": [{
+    // Allows for 'test' and 'expect' KW during Jest testing:
+    "files": [
+      "**/*/.spec.js",
+      "**/*.spec.jsx"
+    ]
+  }],
+  "parserOptions": {
+      "ecmaVersion": "latest"
+  },
+  "rules": {
+    // Personal comments do not require empty lines:
+    "lines-around-comment": [
+      "error",
+      {
+        "beforeBlockComment": false,
+        "afterBlockComment": false,
+        "beforeLineComment": false,
+        "afterLineComment": false,
+        "allowBlockStart": false,
+        "allowBlockEnd": false,
+        "allowObjectStart": false,
+        "allowObjectEnd": false,
+        "allowArrayStart": false,
+        "allowArrayEnd": false
+      }
+    ],
+    "no-confusing-arrow": ["error", { "allowParens": false }],
+    // Auto determines if parenthesis are required or not for multi operators:
+    "no-mixed-operators": "error",
+    // Allows tabs for spacing:
+    "no-tabs": ["error", {"allowIndentationTabs": true}],
+    // Quotes are automatically converted to double quotes:
+    "quotes": [
+      "error",
+      "double",
+      { "avoidEscape": true, "allowTemplateLiterals": false }
+    ],
+    // Allows prettier to break up long lines of code if enabled:
+    "curly": ["error", "all"],
+    // Using 'alert()' in code gives warning:
+    "no-alert": "warn",
+    // Throws an error if trying to call before defined:
+    "no-use-before-define": ["error", {
+      "functions": false,
+      "classes": true,
+      "variables": true,
+      "allowNamedExports": false
     }],
-    "parserOptions": {
-        "ecmaVersion": "latest"
-    },
-    "rules": {
-      // Personal comments do not require empty lines:
-      "lines-around-comment": [
-       "error",
-       {
-         "beforeBlockComment": false,
-         "afterBlockComment": false,
-         "beforeLineComment": false,
-         "afterLineComment": false,
-         "allowBlockStart": false,
-         "allowBlockEnd": false,
-         "allowObjectStart": false,
-         "allowObjectEnd": false,
-         "allowArrayStart": false,
-         "allowArrayEnd": false
-       }
-     ],
-     "no-confusing-arrow": ["error", { "allowParens": false }],
-     // Auto determines if parenthesis are required or not for multi operators:
-     "no-mixed-operators": "error",
-     // Allows tabs for spacing:
-     "no-tabs": ["error", {"allowIndentationTabs": true}],
-     // Quotes are automatically converted to double quotes:
-     "quotes": [
-       "error",
-       "double",
-       { "avoidEscape": true, "allowTemplateLiterals": false }
-     ],
-     // Allows prettier to break up long lines of code if enabled:
-     "curly": ["error", "all"],
-     // Using 'alert()' in code gives warning:
-     "no-alert": "warn",
-     // Throws an error if trying to call before defined:
-     "no-use-before-define": ["error", {
-       "functions": false,
-       "classes": true,
-       "variables": true,
-       "allowNamedExports": false
-     }],
-     // Determines the max amount of classes per file:
-     "max-classes-per-file": ["error", 5],
-     // Allows function parameters to be reassigned:
-     "no-param-reassign": ["error", {"props": false}],
-     // Allows for ++ and -- operators:
-     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-     // Requiring comma placement at the end of multi-line code:
-     "comma-dangle": ["error", "only-multiline"],
-     // Ignore long comments:
-     "max-len": ["error", {
-      "ignoreComments": true,
-      "ignoreUrls": true,
-      "ignoreStrings": true
-      }],
-     "prefer-const": ["error", {
-      "ignoreReadBeforeAssign": true,
-      "destructuring": "all"
-      }],
-      // Allow for '.js' extensions during module import => i.e.: import { ships } from '.ships.js':
-      "import/extensions": [<severity>, "always"]
-   }
+    // Determines the max amount of classes per file:
+    "max-classes-per-file": ["error", 5],
+    // Allows function parameters to be reassigned:
+    "no-param-reassign": ["error", {"props": false}],
+    // Allows for ++ and -- operators:
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    // Requiring comma placement at the end of multi-line code:
+    "comma-dangle": ["error", "only-multiline"],
+    // Ignore long comments:
+    "max-len": ["error", {
+    "ignoreComments": true,
+    "ignoreUrls": true,
+    "ignoreStrings": true
+    }],
+    "prefer-const": ["error", {
+    "ignoreReadBeforeAssign": true,
+    "destructuring": "all"
+    }],
+    // Allow for '.js' extensions during module import => i.e.: import { ships } from '.ships.js':
+    "import/extensions": [<severity>, "always"]
+  }
 }
