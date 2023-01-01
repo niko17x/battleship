@@ -6,10 +6,8 @@ import { Ship } from "./factories/ships.js";
 
 const printWindow = () => {
   window.addEventListener("click", (e) => {
-    console.log(e.target.parentNode.id, e.target.id);
-    // if (e.target.classList.contains("active")) { // => Div with '.active' class (ship occupied).
-    //   console.log(e.target);
-    // }
+    // console.log(e.target.parentNode.id, e.target.id);
+    console.log(e.target);
   });
 };
 // printWindow();
@@ -117,6 +115,7 @@ markBoard("player-1-board");
 const renderBoardClick = (playerTurn, e, playerBoard, player) => {
   const getParentNode = e.target.parentNode.parentNode;
   const getChildClass = e.target.classList;
+
   if (playerTurn) {
     // Player gets a 'hit' on opponent game board when targeted div contains 'active' class:
     if (getParentNode.classList.contains(playerBoard)) {
@@ -124,7 +123,6 @@ const renderBoardClick = (playerTurn, e, playerBoard, player) => {
         getChildClass.remove("active");
         getChildClass.add("hit");
         player.moves[0].hits.push([e.target.parentNode.id, e.target.id]);
-        console.log(player.moves[0].hits);
         const hitShip = getHitShipClass(
           player,
           e.target.parentNode.id,
@@ -144,15 +142,22 @@ const renderBoardClick = (playerTurn, e, playerBoard, player) => {
       togglePlayerTurn();
     }
   }
+  displayScores();
   checkSunkShips(player);
-  areAllShipsSunk(player);
+  getWinner();
 };
 
 // Event handler for function 'renderBoardClick()':
-document.querySelector(".board").addEventListener("click", (e) => {
-  renderBoardClick(playerOneTurn, e, "player-2-board", playerOne);
-  renderBoardClick(!playerOneTurn, e, "player-1-board", playerTwo);
-});
+const acceptClick = () => {
+  document.querySelector(".board").addEventListener("click", (e) => {
+    if (playGame) {
+      renderBoardClick(playerOneTurn, e, "player-2-board", playerOne);
+      renderBoardClick(!playerOneTurn, e, "player-1-board", playerTwo);
+    } else {
+      e.stopPropagation();
+    }
+  });
+};
 
 // Takes x, y from renderBoardClick() function and locates ship (if any) and returns the shipClass to be used in another function:
 const getHitShipClass = (player, x, y) => {
@@ -178,11 +183,80 @@ const checkSunkShips = (player) => {
   });
 };
 
-// If length of player ship property is 0, game is lost (sunk ships are filtered out):
-const areAllShipsSunk = (player) => {
-  // Since sunk ships will be removed from the property, check length:
-  if (player.ships.length === 0) {
-    console.log(`${player} has lost the game!`);
+// Todo: Figure out why the point system is not working correctly:
+// Checks both players if there are no more ships (all sunk):
+const getWinner = () => {
+  if (!playerOne.ships.length) {
+    playerOne.addWin();
+    displayWinner("Player One");
+    playGame = false;
+  } else if (!playerTwo.ships.length) {
+    playerTwo.addWin();
+    displayWinner("Player Two");
+    playGame = false;
   }
-  playGame = false;
 };
+
+// Takes data from 'getWinner()' and uses DOM to add winner to display onto page:
+const displayWinner = (winner) => {
+  const dispWin = document.querySelector(".display-winner");
+  dispWin.innerText = `${winner} wins!`;
+  setTimeout(() => {
+    dispWin.innerText = "";
+  }, 3000);
+};
+
+// Tracking each players score and displaying to the page:
+const displayScores = () => {
+  const p1Score = document.querySelector(".player-1-score");
+  p1Score.innerText = playerOne.wins;
+  const p2Score = document.querySelector(".player-2-score");
+  p2Score.innerText = playerTwo.wins;
+};
+
+// Checks if game has ended due to player win/lose and restarts the game:
+const playAgain = (player) => {
+  const btn = document.querySelector("button");
+  btn.addEventListener("click", (e) => {
+    playGame = true;
+    // Add result of resetGame() here:
+    removeBoardCoords();
+    removeBoardClasses();
+  });
+};
+
+// Reset game:
+// Resetting game
+const removeBoardCoords = () => {
+  const players = [playerOne, playerTwo];
+  // Reset all divs and remove ships/coords for fresh slate.
+  players.forEach((player) => {
+    player.ships.forEach((ship) => {
+      ship.coord = []; // Remove all existing coordinates.
+    });
+  });
+};
+
+// Remove all classes on each div for both players as game board is reset:
+const removeBoardClasses = () => {
+  const p1Board = document.querySelector(".player-1-board");
+  const p2Board = document.querySelector(".player-2-board");
+  const selectAllBoards = [p1Board, p2Board];
+
+  selectAllBoards.forEach((board) => {
+    board.childNodes.forEach((node) => {
+      node.childNodes.forEach((childNode) => {
+        childNode.classList.remove("active");
+        childNode.classList.remove("missed");
+        childNode.classList.remove("hit");
+      });
+    });
+  });
+};
+
+const main = () => {
+  displayScores(); // Show scores on the page.
+  acceptClick();
+  playAgain(); // Reset game on event click.
+};
+main();
