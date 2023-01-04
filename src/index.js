@@ -139,9 +139,7 @@ function renderBoardClick(e, playerBoard, player) {
   }
 
   checkSunkShips(player);
-  getWinner(playerOne, "Player One");
-  getWinner(playerTwo, "Player Two");
-  displayScores();
+  getWinner(player);
   createPlayAgainBtn();
 }
 
@@ -174,7 +172,7 @@ function getHitShipClass(player, x, y) {
   return targetShip;
 }
 
-// Checks for every ship if it is 'sunk' and if sunk, the players ship will be edited to return a list of ships that are NOT yet sunk which effectively removes the sunk ship from the list of ships:
+// Gets new filtered list of ships that have NOT been sunk:
 function checkSunkShips(player) {
   player.ships.forEach((ship) => {
     if (ship.sunk) {
@@ -207,18 +205,23 @@ function allShipsSunk(player) {
   }
 }
 
-function getWinner(player, winner) {
-  if (allShipsSunk(player)) {
-    player.addWin();
-    displayWinner(`${winner}`);
+function getWinner(player) {
+  let winner;
+  player === playerOne ? (winner = playerOne) : (winner = playerTwo);
+
+  if (allShipsSunk(winner)) {
+    winner.addWin();
+    displayWinner(winner);
     playGame = false;
   }
 }
 
 // Takes data from 'recSunkShips()' and uses DOM to add winner to display onto page:
 function displayWinner(winner) {
+  let player;
+  winner === playerOne ? (player = "Player One") : (player = "Player Two");
   const dispWin = document.querySelector(".display-winner");
-  dispWin.innerText = `${winner} wins!`;
+  dispWin.innerText = `${player} wins!`;
 }
 
 // Tracking each players score and displaying to the page:
@@ -241,67 +244,76 @@ function createPlayAgainBtn() {
   }
 }
 
-// Resets the game:
-// function resetBoards() {
-//   const displayWinner = document.querySelector(".display-winner");
-//   const playAgain = document.querySelector(".play-again > button");
-//   document.querySelector(".board").addEventListener(
-//     "click",
-//     (e) => {
-//       if (e.target.innerText === "Play Again?") {
-//         removeBoardCoords();
-//         removeBoardClasses();
-//         displayWinner.innerText = "";
-//         setDefaultShipPos("player-1-board", playerOne);
-//         setDefaultShipPos("player-2-board", playerTwo);
-//         playAgain.remove();
-//         playGame = true;
-//       }
-//     }
-//     // { once: true }
-//   );
-// }
-
 // restore default ship positions after win game:
-function setDefaultShipPos(player) {
+function setGameDefaults(player) {
   player.defaultShips();
   defaultShipPos(player);
   markBoard(player);
+  playerOneTurn = true;
 }
 
-// Reset game:
-function removeBoardCoords() {
+// Removing previous ships (to be used after game is over and restarted):
+function utilRemovePrevShips() {
   const players = [playerOne, playerTwo];
   players.forEach((player) => {
-    player.ships.forEach((ship) => {
-      ship.coord = []; // Remove all existing coordinates.
-    });
+    player.ships.length = 0;
   });
 }
 
-// Remove all classes on each div for both players as game board is reset:
-function removeBoardClasses() {
-  const p1Board = document.querySelector(".player-1-board");
-  const p2Board = document.querySelector(".player-2-board");
-  const selectAllBoards = [p1Board, p2Board];
+function utilGetPlayer(player) {
+  let result;
+  player === playerOne ? (result = "Player One") : (result = "Player Two");
+}
 
-  selectAllBoards.forEach((board) => {
-    board.childNodes.forEach((node) => {
-      node.childNodes.forEach((childNode) => {
-        childNode.classList.remove("active");
-        childNode.classList.remove("missed");
-        childNode.classList.remove("hit");
+// Resetting the board should wipe all classes from each div and restore the original default ship placements just like starting a new game for the first time:
+function resetGameBoard() {
+  document.querySelector("body").addEventListener("click", (e) => {
+    if (e.target.innerText === "Play Again?") {
+      // Remove all existing classes in all div's:
+      const numDiv = document.querySelectorAll(".num");
+      numDiv.forEach((div) => {
+        div.classList.remove("active", "hit", "missed");
       });
-    });
+      // Remove 'play-again' button:
+      utilRemovePlayAgainBtn();
+      // Remove display showing winner:
+      utilRemoveWinnerDisplay();
+      // Remove all existing ships for both players:
+      utilRemovePrevShips();
+      console.log(playerOne);
+      console.log(playerTwo);
+      // Put game in "on" mode again:
+      playGame = true;
+      // Replay from beginning:
+      main();
+    }
   });
+}
+
+// Removing winner display after round is over:
+function utilRemoveWinnerDisplay() {
+  const displayWinner = document.querySelector(".display-winner");
+  if (displayWinner.innerText !== "" || displayWinner.innerText !== null) {
+    displayWinner.innerText = "";
+  }
+}
+
+// Removing play-again button:
+function utilRemovePlayAgainBtn() {
+  const parentDiv = document.querySelector(".play-again");
+  const btn = document.querySelector(".play-again > button");
+  if (parentDiv.contains(btn)) {
+    btn.remove();
+  }
 }
 
 function main() {
-  setDefaultShipPos(playerOne);
-  setDefaultShipPos(playerTwo);
+  setGameDefaults(playerOne);
+  setGameDefaults(playerTwo);
 
-  displayScores();
   acceptClick();
+  displayScores();
+  resetGameBoard();
 }
 
 main();
@@ -310,22 +322,3 @@ main();
 // ? How can the user place a specific ship on the board?
 // ? How do I make the ships draggable?
 // ? How do I make the ships rotate when dragged?
-
-// ! Testing:
-// Resetting the board should wipe all classes from each div and restore the original default ship placements just like starting a new game for the first time:
-function resetGameBoard() {
-  document.querySelector("body").addEventListener("click", (e) => {
-    if (e.target.innerText === "Play Again?") {
-      const numDiv = document.querySelectorAll(".num");
-      numDiv.forEach((div) => {
-        div.classList.remove("active", "hit", "missed");
-      });
-      document.querySelector(".play-again > button").remove();
-      setDefaultShipPos(playerOne);
-      setDefaultShipPos(playerTwo);
-      console.log(playerOne);
-      console.log(playerTwo);
-    }
-  });
-}
-resetGameBoard();
