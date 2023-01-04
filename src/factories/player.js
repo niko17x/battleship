@@ -24,7 +24,7 @@ class Player {
     // const destroyer = new Ship("Destroyer", 3, 0);
     // const submarine1 = new Ship("Submarine-1", 2, 0);
     // const submarine2 = new Ship("Submarine-2", 2, 0);
-    const patrolBoat1 = new Ship("Patrol-Boat-1", 1, 0);
+    // const patrolBoat1 = new Ship("Patrol-Boat-1", 1, 0);
     const patrolBoat2 = new Ship("Patrol-Boat-2", 1, 0);
     this.ships.push(
       // carrier,
@@ -32,7 +32,7 @@ class Player {
       // destroyer,
       // submarine1,
       // submarine2,
-      patrolBoat1,
+      // patrolBoat1,
       patrolBoat2
     );
   }
