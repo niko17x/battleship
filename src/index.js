@@ -7,7 +7,9 @@ import { Ship } from "./factories/ships.js";
 const printWindow = () => {
   window.addEventListener("click", (e) => {
     // console.log(e.target.parentNode.id, e.target.id);
-    console.log(playGame);
+    // console.log(playGame);
+    console.log(e.target.offsetWidth);
+    console.log(e.target.offsetHeight);
   });
 };
 // printWindow();
@@ -39,16 +41,22 @@ const togglePlayerTurn = () => {
 
 // Takes players ships and displays on page as 'div spaces' based on ship length to indicate the available ships:
 const displayShips = (player) => {
-  player.ships.forEach((obj) => {
-    const p1Board = document.querySelector(".player-1-board");
-    const ship = document.createElement("div");
-    // ship.classList.add(`${obj.shipClass}`);
-    for (let i = 0; i < obj.shipLength; i++) {
+  let playerBoard;
+  player === playerOne
+    ? (playerBoard = document.querySelector(".player-1-ships"))
+    : (playerBoard = document.querySelector(".player-2-ships"));
+
+  player.ships.forEach((ship) => {
+    const shipClassDiv = document.createElement("div");
+    for (let i = 0; i < ship.shipLength; i++) {
       const div = document.createElement("div");
       div.classList.add("space");
-      ship.append(div);
+      shipClassDiv.classList.add(ship.shipClass, "draggable");
+      // shipClassDiv.setAttribute("id", "draggable");
+      shipClassDiv.setAttribute("draggable", true);
+      shipClassDiv.append(div);
     }
-    p1Board.append(ship);
+    playerBoard.append(shipClassDiv);
   });
 };
 
@@ -249,7 +257,8 @@ function setGameDefaults(player) {
   player.defaultShips();
   defaultShipPos(player);
   markBoard(player);
-  playerOneTurn = true;
+
+  // playerOneTurn = true;
 }
 
 // Removing previous ships (to be used after game is over and restarted):
@@ -280,8 +289,6 @@ function resetGameBoard() {
       utilRemoveWinnerDisplay();
       // Remove all existing ships for both players:
       utilRemovePrevShips();
-      console.log(playerOne);
-      console.log(playerTwo);
       // Put game in "on" mode again:
       playGame = true;
       // Replay from beginning:
@@ -310,6 +317,8 @@ function utilRemovePlayAgainBtn() {
 function main() {
   setGameDefaults(playerOne);
   setGameDefaults(playerTwo);
+  displayShips(playerOne);
+  displayShips(playerTwo);
 
   acceptClick();
   displayScores();
@@ -318,7 +327,66 @@ function main() {
 
 main();
 
-// ? How do I place the second set of ships on the board after the 'play again?' button has been clicked on?
-// ? How can the user place a specific ship on the board?
-// ? How do I make the ships draggable?
-// ? How do I make the ships rotate when dragged?
+// !!! DRAG FUNCTIONS/EVENTS !!! //
+
+// ? Issues => Dragging a single div to board seems to work however, trying to place a ship with multiple div's somehow forces the div's that are placed horizontal, in vertical position only. /// Border or background color being applied to the ship div's are not exactly in line causing 'spillage'.
+foo();
+
+// const ship = document.querySelector(".Carrier");
+// const ship = document.querySelector(".Patrol-Boat-2");
+const ship = document.querySelector(".shipClass");
+
+let dragged;
+ship.addEventListener("dragstart", (e) => {
+  dragged = e.target;
+});
+
+const target = document.querySelectorAll(".num");
+target.forEach((elem) => {
+  elem.addEventListener("dragover", (e) => {
+    e.preventDefault();
+  });
+});
+
+target.forEach((elem) => {
+  elem.addEventListener("drop", (e) => {
+    e.preventDefault();
+    e.target.classList.add("dragged");
+
+    if (e.target.classList.contains("num")) {
+      dragged.parentNode.removeChild(dragged);
+      e.target.appendChild(dragged);
+
+      const x = e.target.offsetWidth / 2 - ship.offsetWidth / 2;
+      const y = e.target.offsetHeight / 2 - ship.offsetHeight / 2;
+
+      e.target.firstChild.setAttribute(
+        "style",
+        `position: relative; left: ${x}px; top: ${y}px;`
+      );
+    }
+  });
+});
+
+// Todo: Figure out how to make each ship space div an exact size instead of spilling over => How can I get these div spaces to show up horizontally on page w/o having to use inline-block (which is causing the spillage)?
+function foo() {
+  const divs = [];
+  const p1Ships = document.querySelector(".player-1-ships");
+
+  for (let i = 0; i < 1; i++) {
+    const parentDiv = document.createElement("div");
+    parentDiv.classList.add("shipClass");
+    parentDiv.classList.add("draggable");
+
+    const childDiv = document.createElement("div");
+    childDiv.classList.add("noSpace");
+    parentDiv.setAttribute("draggable", true);
+
+    parentDiv.append(childDiv);
+    p1Ships.append(parentDiv);
+
+    divs.push(childDiv);
+  }
+}
+
+// Chnage the style of the draggable div with : style="position: relative; left: 8px; top: 8px;"
