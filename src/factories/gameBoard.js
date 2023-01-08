@@ -67,17 +67,34 @@ class GameBoard {
 
   // Create the game board:
   createBoard(playerBoard) {
+    //   const columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+
+    //   for (let i = 0; i < columns.length; i++) {
+    //     const row = document.createElement("div");
+    //     row.classList.add("alpha");
+    //     row.id = columns[i];
+    //     // playerBoard param allows DOM element to append to HTML element:
+    //     document.querySelector(playerBoard).appendChild(row);
+    //     for (let j = 1; j < 11; j++) {
+    //       const col = document.createElement("div");
+    //       col.classList.add("num");
+    //       col.id = j;
+    //       // col.id = `${columns[i]}${j}`;
+    //       row.appendChild(col);
+    //     }
+    //   }
+    // }
     const columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
     for (let i = 0; i < columns.length; i++) {
       const row = document.createElement("div");
-      row.classList.add("alpha");
+      row.classList.add("alpha", "dropzone");
       row.id = columns[i];
       // playerBoard param allows DOM element to append to HTML element:
       document.querySelector(playerBoard).appendChild(row);
       for (let j = 1; j < 11; j++) {
         const col = document.createElement("div");
-        col.classList.add("num");
+        col.classList.add("num", "dropzone");
         col.id = j;
         // col.id = `${columns[i]}${j}`;
         row.appendChild(col);
