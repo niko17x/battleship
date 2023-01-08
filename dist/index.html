@@ -125,8 +125,9 @@
   }
   .num {
     border: 1px solid black;
-    height: 2rem;
-    width: 2rem;
+    height: 2.2rem;
+    width: 2.2rem;
+    margin: 1px;
   }
 
   .active {
@@ -142,22 +143,21 @@
   }
 
   .space {
-    height: 15px;
-    width: 15px;
+    box-sizing: border-box;
+    height: 2rem;
+    width: 2rem;
     display: inline-block;
+    border: 1px solid white;
+    background-color: salmon;
   }
-/* 
-  .player-one-board,
-  .player-two-board {
-    display: inline-block
-  } */
+
 
   .player-1-ships,
   .player-2-ships {
-    display: grid;
+    /* display: grid; */
+    /* place-items: center; */
     padding-top: 1rem;
-    border: 1px solid orange;
-
+    font-size: 1.7rem;
   }
 
   .play-again > button {
@@ -203,13 +203,11 @@
     opacity: 1;
   }
 
-  .player-2-board > #A > #1::before {
-    content: 'A'
+  /* !!! DRAGGABLE EVENTS !!! */
+
+  .dropzone {
+    background: blueviolet;
   }
-
-
-
-
 
 
 </style>
