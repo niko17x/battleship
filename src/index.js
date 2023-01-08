@@ -1,5 +1,6 @@
 // import _ from "lodash";
 // import { create } from "/lodash.js";
+// import { indexOf } from "lodash";
 import { GameBoard } from "./factories/gameBoard.js";
 import { Player } from "./factories/player.js";
 import { Ship } from "./factories/ships.js";
@@ -329,12 +330,15 @@ main();
 
 // !!! DRAG FUNCTIONS/EVENTS !!! //
 
-// ? Issues => Dragging a single div to board seems to work however, trying to place a ship with multiple div's somehow forces the div's that are placed horizontal, in vertical position only. /// Border or background color being applied to the ship div's are not exactly in line causing 'spillage'.
-foo();
+// ??? Issue: When placing a ship that contains more than one div, dropping it on the board is causing only one div to be properly placed on the board. This is an issue b/c if the ship has more than one div, dropping the ship onto the board should take into account not only the clicked on div on the board, but also the other div's that are a part of the ship.
 
-// const ship = document.querySelector(".Carrier");
+// ??? Idea: Submarine ship contains 2 div's due to it's length. Each div is a child that contains the class 'space'. We can have the first 'space' div append to the clicked on dropzone on the board then we can use take the second div of the ship to append it to the div below or side (horizontal placement) of it.
+
+// Todo: Managed to get multiple div's (depending on ship length) to append to board (vertical only). However, I need to consider the out-of-bounds, re-dragging div's once placed on board, occupying space of board if ship is placed.
+
+const ship = document.querySelector(".Submarine-2");
 // const ship = document.querySelector(".Patrol-Boat-2");
-const ship = document.querySelector(".shipClass");
+// const ship = document.querySelector(".shipClass");
 
 let dragged;
 ship.addEventListener("dragstart", (e) => {
@@ -342,11 +346,14 @@ ship.addEventListener("dragstart", (e) => {
 });
 
 const target = document.querySelectorAll(".num");
+
 target.forEach((elem) => {
   elem.addEventListener("dragover", (e) => {
     e.preventDefault();
   });
 });
+
+// !!! testing:
 
 target.forEach((elem) => {
   elem.addEventListener("drop", (e) => {
@@ -355,38 +362,81 @@ target.forEach((elem) => {
 
     if (e.target.classList.contains("num")) {
       dragged.parentNode.removeChild(dragged);
-      e.target.appendChild(dragged);
+      // Need to get the parent/child id of 'dropped' div on board so I can get the placement of the next 'space' div according to placement of first ship 'space' div:
+      e.target.appendChild(ship.children[0]);
+      let pId = e.target.parentElement.id;
+      let cId = e.target.id;
+      // console.log(e.target.parentElement.id, e.target.id);
+      console.log(elem.parentElement.id, elem.id);
+      console.log(typeof pId, typeof cId);
+      console.log(getNextParId(pId), getNextChildId(cId));
 
-      const x = e.target.offsetWidth / 2 - ship.offsetWidth / 2;
-      const y = e.target.offsetHeight / 2 - ship.offsetHeight / 2;
-
-      e.target.firstChild.setAttribute(
-        "style",
-        `position: relative; left: ${x}px; top: ${y}px;`
-      );
+      target.forEach((num) => {
+        if (num.parentElement.id === getNextParId(pId) && num.id === cId) {
+          num.style.background = "blue";
+          num.append(ship.children[0]);
+        }
+      });
+    } else {
+      // Out of bounds error message.
     }
+
+    // if (e.target.id === "1" && e.target.parentElement.id === "A") {
+    //   // append the first div 'space' of submarine to the board then remove:
+    //   dragged.parentNode.removeChild(dragged); // => Removes ship from 'player 1 ships' section.
+    //   e.target.appendChild(ship.children[0]);
+
+    //   // * I need a separate function that will take in length of the ship, find the parent/child id within the board and apply each ship 'space' div to the board:
+    //   const nums = document.querySelectorAll(".num");
+    //   nums.forEach((num) => {
+    //     if (num.parentElement.id === "B" && num.id === "1") {
+    //       num.append(ship.children[0]);
+    //     }
+    //   });
+    // }
   });
 });
 
-// Todo: Figure out how to make each ship space div an exact size instead of spilling over => How can I get these div spaces to show up horizontally on page w/o having to use inline-block (which is causing the spillage)?
-function foo() {
-  const divs = [];
-  const p1Ships = document.querySelector(".player-1-ships");
+// Get next parent element id of given current id value:
+function getNextParId(pId) {
+  let result;
+  const alphaDivs = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
-  for (let i = 0; i < 1; i++) {
-    const parentDiv = document.createElement("div");
-    parentDiv.classList.add("shipClass");
-    parentDiv.classList.add("draggable");
-
-    const childDiv = document.createElement("div");
-    childDiv.classList.add("noSpace");
-    parentDiv.setAttribute("draggable", true);
-
-    parentDiv.append(childDiv);
-    p1Ships.append(parentDiv);
-
-    divs.push(childDiv);
+  alphaDivs.forEach((alpha, index) => {
+    if (alpha === pId) {
+      let alphaIndex = alphaDivs.indexOf(pId);
+      result = alphaDivs[alphaIndex + 1];
+    }
+  });
+  if (alphaDivs.includes(result)) {
+    return result;
+  } else {
+    return "Out of bounds.";
   }
 }
 
-// Chnage the style of the draggable div with : style="position: relative; left: 8px; top: 8px;"
+// Get next child element id:
+function getNextChildId(cId) {
+  let result;
+  const numDivs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  numDivs.forEach((num) => {
+    if (num === cId) {
+      let alphaIndex = numDivs.indexOf(cId);
+      result = numDivs[alphaIndex + 1];
+    }
+  });
+  if (numDivs.includes(result)) {
+    return result;
+  } else {
+    return "Out of bounds.";
+  }
+}
+
+console.log(getNextChildId(9));
+
+// If I place a ship div on the board and the length is greater than 1, I need to place the other div in proper order but need to verify if the it is out of bounds in both the parent/child id.
+function dragShipOnBoard(shipLength) {
+  // Account for length of ship:
+  for (let i = 0; i < shipLength; i++) {}
+}
