@@ -26,7 +26,7 @@
       <div class="board">
         <div class="player1">
           <div class="player-1-board"></div>
-          <div class="player-1-ships">Player 1 Ships:</div>
+          <div class="player-1-ships"></div>
         </div>
         <div class="score-board">
           <div class="score-text">Score:</div>
@@ -39,8 +39,11 @@
         </div>
         <div class="player2">
           <div class="player-2-board"></div>
-          <div class="player-2-ships">Player 2 Ships:</div>
+          <div class="player-2-ships"></div>
         </div>
+      </div>
+      <div class="ship-orient-section">
+        <button class="ship-orient-btn">Orientation</button>
       </div>
     </div>
 
@@ -131,7 +134,7 @@
   }
 
   .active {
-    background-color: white;
+    background-color: transparent;
   }
 
   .hit {
@@ -142,22 +145,39 @@
     background-color: yellow;
   }
 
-  .space {
-    box-sizing: border-box;
+  /* Vertical => .space = no display */
+  /* Horizontal => .space = yes inline-block */
+  /* .space {
+    display: inline-block;
     height: 2rem;
     width: 2rem;
+    margin: .07rem;
+    background-color: salmon;
+  } */
+
+  .horizontal {
     display: inline-block;
-    border: 1px solid white;
+    height: 2rem;
+    width: 2rem;
+    margin: .07rem;
+    background-color: salmon;
+  }
+  .vertical {
+    height: 2rem;
+    width: 2rem;
+    margin: .07rem;
     background-color: salmon;
   }
 
-
+  /* Vertical => yes display */
+  /* Horizontal => no display */
   .player-1-ships,
   .player-2-ships {
     /* display: grid; */
-    /* place-items: center; */
+    grid-template-columns: repeat(7, 1fr);
     padding-top: 1rem;
     font-size: 1.7rem;
+    height: 20rem;
   }
 
   .play-again > button {
@@ -206,7 +226,11 @@
   /* !!! DRAGGABLE EVENTS !!! */
 
   .dropzone {
-    background: blueviolet;
+    /* background: blueviolet; */
+  }
+
+  .dragged {
+    /* opacity: 0.2; */
   }
 
 
