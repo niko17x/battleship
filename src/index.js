@@ -18,6 +18,10 @@ const printWindow = () => {
 let playGame = true;
 // let playGame = false;
 
+let shipOrientation = "vertical";
+shipOrientation = "horizontal";
+// shipOrientPlacement();
+
 // Create player instances:
 const playerOne = new Player("Player One");
 const playerTwo = new Player("Player Two");
@@ -32,34 +36,72 @@ playerTwoBoard.createBoard(".player-2-board");
 
 // Deal with taking player turns:
 let playerOneTurn = true;
-const togglePlayerTurn = () => {
+
+function main() {
+  setGameDefaults(playerOne);
+  setGameDefaults(playerTwo);
+  createShips();
+
+  acceptClick();
+  displayScores();
+  resetGameBoard();
+}
+
+main();
+
+function togglePlayerTurn() {
   if (playerOneTurn) {
     playerOneTurn = false;
   } else {
     playerOneTurn = true;
   }
-};
+}
 
 // Takes players ships and displays on page as 'div spaces' based on ship length to indicate the available ships:
-const displayShips = (player) => {
-  let playerBoard;
-  player === playerOne
-    ? (playerBoard = document.querySelector(".player-1-ships"))
-    : (playerBoard = document.querySelector(".player-2-ships"));
+function createShips(orientation) {
+  const player1Ships = document.querySelector(".player-1-ships");
+  const player2Ships = document.querySelector(".player-2-ships");
+  const players = [playerOne, playerTwo];
 
-  player.ships.forEach((ship) => {
-    const shipClassDiv = document.createElement("div");
-    for (let i = 0; i < ship.shipLength; i++) {
-      const div = document.createElement("div");
-      div.classList.add("space");
-      shipClassDiv.classList.add(ship.shipClass, "draggable");
-      // shipClassDiv.setAttribute("id", "draggable");
-      shipClassDiv.setAttribute("draggable", true);
-      shipClassDiv.append(div);
-    }
-    playerBoard.append(shipClassDiv);
+  players.forEach((player) => {
+    player.ships.forEach((ship) => {
+      const shipClassDiv = document.createElement("div");
+
+      for (let i = 0; i < ship.shipLength; i++) {
+        if (shipOrientation === "horizontal") {
+          const div = document.createElement("div");
+          div.classList.remove("vertical");
+          div.classList.add("space", "horizontal");
+          shipClassDiv.classList.add(ship.shipClass.toLowerCase(), "draggable");
+          shipClassDiv.setAttribute("draggable", true);
+          shipClassDiv.append(div);
+        } else {
+          const div = document.createElement("div");
+          div.classList.remove("horizontal");
+          div.classList.add("space", "vertical");
+          player1Ships.style.display = "grid";
+          player1Ships.style.setProperty(
+            "grid-template-columns",
+            "repeat(7, 1fr)"
+          );
+          player2Ships.style.display = "grid";
+          player2Ships.style.setProperty(
+            "grid-template-columns",
+            "repeat(7, 1fr)"
+          );
+          shipClassDiv.classList.add(ship.shipClass.toLowerCase(), "draggable");
+          shipClassDiv.setAttribute("draggable", true);
+          shipClassDiv.append(div);
+        }
+      }
+      if (player === playerOne) {
+        player1Ships.append(shipClassDiv);
+      } else {
+        player2Ships.append(shipClassDiv);
+      }
+    });
   });
-};
+}
 
 // *** Deal with default placement of ships (non-randomized or selected coordinates) ***
 // Ships = [Carrier, Battle-Ship, Destroyer, Submarine-1, Submarine-2, Patrol-Boat-1, Patrol-Boat-2];
@@ -83,7 +125,7 @@ function defaultShipPos(player) {
   // setShipCoord(player, "Submarine-1", "D", 7);
   // setShipCoord(player, "Submarine-2", "G", 3);
   // setShipCoord(player, "Patrol-Boat-1", "A", 10);
-  setShipCoord(player, "Patrol-Boat-2", "E", 3);
+  // setShipCoord(player, "Patrol-Boat-2", "E", 3);
 }
 
 // Returns an array of each ship coordinate for selected player:
@@ -258,7 +300,6 @@ function setGameDefaults(player) {
   player.defaultShips();
   defaultShipPos(player);
   markBoard(player);
-
   // playerOneTurn = true;
 }
 
@@ -315,34 +356,32 @@ function utilRemovePlayAgainBtn() {
   }
 }
 
-function main() {
-  setGameDefaults(playerOne);
-  setGameDefaults(playerTwo);
-  displayShips(playerOne);
-  displayShips(playerTwo);
-
-  acceptClick();
-  displayScores();
-  resetGameBoard();
-}
-
-main();
-
 // !!! DRAG FUNCTIONS/EVENTS !!! //
 
-// ??? Issue: When placing a ship that contains more than one div, dropping it on the board is causing only one div to be properly placed on the board. This is an issue b/c if the ship has more than one div, dropping the ship onto the board should take into account not only the clicked on div on the board, but also the other div's that are a part of the ship.
+const shipCarrier = document.querySelector(".carrier");
+const shipBattle = document.querySelector(".battle-ship");
+const shipDest = document.querySelector(".destroyer");
+const shipSub1 = document.querySelector(".submarine-1");
+const shipSub2 = document.querySelector(".submarine-2");
+const shipPatrol1 = document.querySelector(".patrol-boat-1");
+const shipPatrol2 = document.querySelector(".patrol-boat-2");
 
-// ??? Idea: Submarine ship contains 2 div's due to it's length. Each div is a child that contains the class 'space'. We can have the first 'space' div append to the clicked on dropzone on the board then we can use take the second div of the ship to append it to the div below or side (horizontal placement) of it.
-
-// Todo: Managed to get multiple div's (depending on ship length) to append to board (vertical only). However, I need to consider the out-of-bounds, re-dragging div's once placed on board, occupying space of board if ship is placed.
-
-const ship = document.querySelector(".Submarine-2");
-// const ship = document.querySelector(".Patrol-Boat-2");
-// const ship = document.querySelector(".shipClass");
+const selectAllShips = [
+  shipCarrier,
+  shipBattle,
+  shipDest,
+  shipSub1,
+  shipSub2,
+  shipPatrol1,
+  shipPatrol2,
+];
 
 let dragged;
-ship.addEventListener("dragstart", (e) => {
-  dragged = e.target;
+
+selectAllShips.forEach((ship) => {
+  ship.addEventListener("dragstart", (e) => {
+    dragged = e.target;
+  });
 });
 
 const target = document.querySelectorAll(".num");
@@ -353,90 +392,148 @@ target.forEach((elem) => {
   });
 });
 
-// !!! testing:
-
 target.forEach((elem) => {
   elem.addEventListener("drop", (e) => {
     e.preventDefault();
-    e.target.classList.add("dragged");
-
     if (e.target.classList.contains("num")) {
-      dragged.parentNode.removeChild(dragged);
-      // Need to get the parent/child id of 'dropped' div on board so I can get the placement of the next 'space' div according to placement of first ship 'space' div:
-      e.target.appendChild(ship.children[0]);
       let pId = e.target.parentElement.id;
       let cId = e.target.id;
-      // console.log(e.target.parentElement.id, e.target.id);
-      console.log(elem.parentElement.id, elem.id);
-      console.log(typeof pId, typeof cId);
-      console.log(getNextParId(pId), getNextChildId(cId));
-
-      target.forEach((num) => {
-        if (num.parentElement.id === getNextParId(pId) && num.id === cId) {
-          num.style.background = "blue";
-          num.append(ship.children[0]);
+      if (shipOrientation === "vertical") {
+        const getParElements = getNextParId(pId, dragged.children.length);
+        if (getParElements) {
+          target.forEach((num) => {
+            for (let i = 0; i < getParElements.length; i++) {
+              if (
+                num.parentElement.id === getParElements[i] &&
+                num.id === cId
+              ) {
+                num.classList.add("active");
+                num.append(dragged.children[0]);
+              }
+            }
+          });
+          dragged.parentNode.removeChild(dragged);
         }
-      });
-    } else {
-      // Out of bounds error message.
+      } else {
+        const getChildElements = getNextChildId(cId, dragged.children.length);
+        if (getChildElements) {
+          target.forEach((num) => {
+            for (let i = 0; i < getChildElements.length; i++) {
+              if (
+                num.parentElement.id === pId &&
+                num.id === getChildElements[i]
+              ) {
+                num.classList.add("active");
+                num.append(dragged.children[0]);
+              }
+            }
+          });
+          dragged.parentNode.removeChild(dragged);
+        }
+      }
     }
-
-    // if (e.target.id === "1" && e.target.parentElement.id === "A") {
-    //   // append the first div 'space' of submarine to the board then remove:
-    //   dragged.parentNode.removeChild(dragged); // => Removes ship from 'player 1 ships' section.
-    //   e.target.appendChild(ship.children[0]);
-
-    //   // * I need a separate function that will take in length of the ship, find the parent/child id within the board and apply each ship 'space' div to the board:
-    //   const nums = document.querySelectorAll(".num");
-    //   nums.forEach((num) => {
-    //     if (num.parentElement.id === "B" && num.id === "1") {
-    //       num.append(ship.children[0]);
-    //     }
-    //   });
-    // }
   });
 });
 
-// Get next parent element id of given current id value:
-function getNextParId(pId) {
-  let result;
-  const alphaDivs = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+// *** Not currently being used *** //
+function shipOrientPlacement() {
+  const spaces = document.querySelectorAll(".space");
+  console.log(shipOrientation);
+  if (shipOrientation === "horizontal") {
+    spaces.forEach((space) => {
+      space.classList.add("horizontal");
+    });
+  } else {
+    spaces.forEach((space) => {
+      space.classList.add("vertical");
+    });
+    const p1Ships = document.querySelector(".player-1-ships");
+    const p2Ships = document.querySelector(".player-2-ships");
+    p1Ships.style.display = "grid";
+    p1Ships.style.setProperty("grid-template-columns", "repeat(7, 1fr)");
+    p2Ships.style.display = "";
+    p2Ships.style.setProperty("grid-template-columns", "repeat(7, 1fr)");
+  }
+}
 
-  alphaDivs.forEach((alpha, index) => {
-    if (alpha === pId) {
-      let alphaIndex = alphaDivs.indexOf(pId);
-      result = alphaDivs[alphaIndex + 1];
+// Go through each div on board and 'find' the parent id for each item in the array for getNextParId() => Then append each ship 'space' div to the div on the board that matches. => The function should accept a single input (items from the array):
+function findBoardDiv(alphaDiv) {
+  const boardDivs = document.querySelectorAll(".num");
+  // let findDiv = boardDivs.find((div) => div.parentElement.id === alphaDiv);
+  boardDivs.forEach((div) => {
+    if (div.parentElement.id === alphaDiv) {
+      return div;
     }
   });
-  if (alphaDivs.includes(result)) {
-    return result;
-  } else {
-    return "Out of bounds.";
+}
+
+// Get next parent element id of given current id value:
+function getNextParId(pId, length) {
+  let result = [];
+  const alphas = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+
+  for (let i = 0; i < length; i++) {
+    if (alphas.includes(pId)) {
+      let alphaIndex = alphas.indexOf(pId);
+      result += pId;
+      pId = alphas[alphaIndex + 1];
+    } else {
+      return false;
+    }
   }
+  return result;
 }
 
 // Get next child element id:
-function getNextChildId(cId) {
-  let result;
-  const numDivs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+function getNextChildId(cId, length) {
+  let result = [];
+  const nums = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
-  numDivs.forEach((num) => {
-    if (num === cId) {
-      let alphaIndex = numDivs.indexOf(cId);
-      result = numDivs[alphaIndex + 1];
+  for (let i = 0; i < length; i++) {
+    if (nums.includes(cId)) {
+      let alphaIndex = nums.indexOf(cId);
+      result += cId;
+      cId = nums[alphaIndex + 1];
+    } else {
+      return false;
     }
+  }
+  return result;
+}
+
+// !!! WORKING ON THIS FUNCTION:
+function toggleShipOrient() {
+  const btn = document.querySelector(".ship-orient-btn");
+  btn.addEventListener("click", (e) => {
+    if (shipOrientation === "vertical") {
+      shipOrientation = "horizontal";
+    } else {
+      shipOrientation = "vertical";
+    }
+    utilChangeOrient(shipOrientation);
   });
-  if (numDivs.includes(result)) {
-    return result;
-  } else {
-    return "Out of bounds.";
+}
+toggleShipOrient();
+
+function utilChangeOrient(shipOrientation) {
+  const p1 = document.querySelector(".player-1-ships").children;
+  const p1Ships = document.querySelector(".player-1-ships");
+  const p2Ships = document.querySelector(".player-2-ships");
+  for (let i = 0; i < p1.length; i++) {
+    for (let j = 0; j < p1[i].children.length; j++) {
+      if (shipOrientation === "horizontal") {
+        p1[i].children[j].classList.remove("vertical");
+        p1[i].children[j].classList.add("horizontal");
+        p1Ships.style.display = "";
+        p2Ships.style.display = "";
+      } else {
+        p1[i].children[j].classList.remove("horizontal");
+        p1[i].children[j].classList.add("vertical");
+        p1Ships.style.display = "grid";
+        p2Ships.style.display = "grid";
+      }
+    }
   }
 }
 
-console.log(getNextChildId(9));
-
-// If I place a ship div on the board and the length is greater than 1, I need to place the other div in proper order but need to verify if the it is out of bounds in both the parent/child id.
-function dragShipOnBoard(shipLength) {
-  // Account for length of ship:
-  for (let i = 0; i < shipLength; i++) {}
-}
+// ??? Placing a ship for player 2 is causing a bug.
