@@ -311,29 +311,18 @@ function utilRemovePrevShips() {
   });
 }
 
-function utilGetPlayer(player) {
-  let result;
-  player === playerOne ? (result = "Player One") : (result = "Player Two");
-}
-
 // Resetting the board should wipe all classes from each div and restore the original default ship placements just like starting a new game for the first time:
 function resetGameBoard() {
   document.querySelector("body").addEventListener("click", (e) => {
     if (e.target.innerText === "Play Again?") {
-      // Remove all existing classes in all div's:
       const numDiv = document.querySelectorAll(".num");
       numDiv.forEach((div) => {
         div.classList.remove("active", "hit", "missed");
       });
-      // Remove 'play-again' button:
       utilRemovePlayAgainBtn();
-      // Remove display showing winner:
       utilRemoveWinnerDisplay();
-      // Remove all existing ships for both players:
       utilRemovePrevShips();
-      // Put game in "on" mode again:
       playGame = true;
-      // Replay from beginning:
       main();
     }
   });
@@ -407,7 +396,7 @@ target.forEach((elem) => {
                 num.parentElement.id === getParElements[i] &&
                 num.id === cId
               ) {
-                num.classList.add("active");
+                num.classList.add("active", "occupied");
                 num.append(dragged.children[0]);
               }
             }
@@ -423,7 +412,7 @@ target.forEach((elem) => {
                 num.parentElement.id === pId &&
                 num.id === getChildElements[i]
               ) {
-                num.classList.add("active");
+                num.classList.add("active", "occupied");
                 num.append(dragged.children[0]);
               }
             }
@@ -435,38 +424,6 @@ target.forEach((elem) => {
   });
 });
 
-// *** Not currently being used *** //
-function shipOrientPlacement() {
-  const spaces = document.querySelectorAll(".space");
-  console.log(shipOrientation);
-  if (shipOrientation === "horizontal") {
-    spaces.forEach((space) => {
-      space.classList.add("horizontal");
-    });
-  } else {
-    spaces.forEach((space) => {
-      space.classList.add("vertical");
-    });
-    const p1Ships = document.querySelector(".player-1-ships");
-    const p2Ships = document.querySelector(".player-2-ships");
-    p1Ships.style.display = "grid";
-    p1Ships.style.setProperty("grid-template-columns", "repeat(7, 1fr)");
-    p2Ships.style.display = "";
-    p2Ships.style.setProperty("grid-template-columns", "repeat(7, 1fr)");
-  }
-}
-
-// Go through each div on board and 'find' the parent id for each item in the array for getNextParId() => Then append each ship 'space' div to the div on the board that matches. => The function should accept a single input (items from the array):
-function findBoardDiv(alphaDiv) {
-  const boardDivs = document.querySelectorAll(".num");
-  // let findDiv = boardDivs.find((div) => div.parentElement.id === alphaDiv);
-  boardDivs.forEach((div) => {
-    if (div.parentElement.id === alphaDiv) {
-      return div;
-    }
-  });
-}
-
 // Get next parent element id of given current id value:
 function getNextParId(pId, length) {
   let result = [];
@@ -475,7 +432,7 @@ function getNextParId(pId, length) {
   for (let i = 0; i < length; i++) {
     if (alphas.includes(pId)) {
       let alphaIndex = alphas.indexOf(pId);
-      result += pId;
+      result.push(pId);
       pId = alphas[alphaIndex + 1];
     } else {
       return false;
@@ -492,7 +449,7 @@ function getNextChildId(cId, length) {
   for (let i = 0; i < length; i++) {
     if (nums.includes(cId)) {
       let alphaIndex = nums.indexOf(cId);
-      result += cId;
+      result.push(cId);
       cId = nums[alphaIndex + 1];
     } else {
       return false;
@@ -501,7 +458,6 @@ function getNextChildId(cId, length) {
   return result;
 }
 
-// !!! WORKING ON THIS FUNCTION:
 function toggleShipOrient() {
   const btn = document.querySelector(".ship-orient-btn");
   btn.addEventListener("click", (e) => {
@@ -517,23 +473,28 @@ toggleShipOrient();
 
 function utilChangeOrient(shipOrientation) {
   const p1 = document.querySelector(".player-1-ships").children;
+  const p2 = document.querySelector(".player-2-ships").children;
+  const playerShips = [p1, p2];
   const p1Ships = document.querySelector(".player-1-ships");
   const p2Ships = document.querySelector(".player-2-ships");
-  for (let i = 0; i < p1.length; i++) {
-    for (let j = 0; j < p1[i].children.length; j++) {
-      if (shipOrientation === "horizontal") {
-        p1[i].children[j].classList.remove("vertical");
-        p1[i].children[j].classList.add("horizontal");
-        p1Ships.style.display = "";
-        p2Ships.style.display = "";
-      } else {
-        p1[i].children[j].classList.remove("horizontal");
-        p1[i].children[j].classList.add("vertical");
-        p1Ships.style.display = "grid";
-        p2Ships.style.display = "grid";
+
+  playerShips.forEach((player) => {
+    for (let i = 0; i < player.length; i++) {
+      for (let j = 0; j < player[i].children.length; j++) {
+        if (shipOrientation === "horizontal") {
+          player[i].children[j].classList.remove("vertical");
+          player[i].children[j].classList.add("horizontal");
+          p1Ships.style.display = "";
+          p2Ships.style.display = "";
+        } else {
+          player[i].children[j].classList.remove("horizontal");
+          player[i].children[j].classList.add("vertical");
+          p1Ships.style.display = "grid";
+          p2Ships.style.display = "grid";
+        }
       }
     }
-  }
+  });
 }
 
 // ??? Placing a ship for player 2 is causing a bug.
