@@ -19,7 +19,7 @@ let playGame = true;
 // let playGame = false;
 
 let shipOrientation = "vertical";
-shipOrientation = "horizontal";
+// shipOrientation = "horizontal";
 // shipOrientPlacement();
 
 // Create player instances:
@@ -347,82 +347,107 @@ function utilRemovePlayAgainBtn() {
 
 // !!! DRAG FUNCTIONS/EVENTS !!! //
 
-const shipCarrier = document.querySelector(".carrier");
-const shipBattle = document.querySelector(".battle-ship");
-const shipDest = document.querySelector(".destroyer");
-const shipSub1 = document.querySelector(".submarine-1");
-const shipSub2 = document.querySelector(".submarine-2");
-const shipPatrol1 = document.querySelector(".patrol-boat-1");
-const shipPatrol2 = document.querySelector(".patrol-boat-2");
-
-const selectAllShips = [
-  shipCarrier,
-  shipBattle,
-  shipDest,
-  shipSub1,
-  shipSub2,
-  shipPatrol1,
-  shipPatrol2,
-];
+// !!! TEST START !!!
+const allShips = document.querySelectorAll(".draggable"); // Select all ships.
+// const allNums = document.querySelectorAll(".num");
 
 let dragged;
 
-selectAllShips.forEach((ship) => {
+// Go through all ships and add 'dragstart' event to each ship :
+allShips.forEach((ship) => {
   ship.addEventListener("dragstart", (e) => {
     dragged = e.target;
+    dragoverEvent();
+    dropEvent();
   });
 });
 
-const target = document.querySelectorAll(".num");
+// Go through all div's with class containing '.num' and add 'dragover' event to each .num :
+function dragoverEvent() {
+  let playerBoard;
+  dragged.parentElement.className === "player-1-ships"
+    ? (playerBoard = document.querySelectorAll(
+        ".player-1-board > .alpha > .num"
+      ))
+    : (playerBoard = document.querySelectorAll(
+        ".player-2-board > .alpha > .num"
+      ));
 
-target.forEach((elem) => {
-  elem.addEventListener("dragover", (e) => {
-    e.preventDefault();
+  playerBoard.forEach((num) => {
+    num.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
   });
-});
+}
 
-target.forEach((elem) => {
-  elem.addEventListener("drop", (e) => {
-    e.preventDefault();
-    if (e.target.classList.contains("num")) {
-      let pId = e.target.parentElement.id;
-      let cId = e.target.id;
-      if (shipOrientation === "vertical") {
-        const getParElements = getNextParId(pId, dragged.children.length);
-        if (getParElements) {
-          target.forEach((num) => {
-            for (let i = 0; i < getParElements.length; i++) {
-              if (
-                num.parentElement.id === getParElements[i] &&
-                num.id === cId
-              ) {
-                num.classList.add("active", "occupied");
-                num.append(dragged.children[0]);
-              }
-            }
-          });
-          dragged.parentNode.removeChild(dragged);
-        }
-      } else {
-        const getChildElements = getNextChildId(cId, dragged.children.length);
-        if (getChildElements) {
-          target.forEach((num) => {
-            for (let i = 0; i < getChildElements.length; i++) {
-              if (
-                num.parentElement.id === pId &&
-                num.id === getChildElements[i]
-              ) {
-                num.classList.add("active", "occupied");
-                num.append(dragged.children[0]);
-              }
-            }
-          });
-          dragged.parentNode.removeChild(dragged);
+// * Check which 'dragged' belongs to by using 'dragged.parentElement.className'.
+function dropEvent() {
+  const p1Board = document.querySelectorAll(".player-1-board > .alpha > .num");
+  const p2Board = document.querySelectorAll(".player-2-board > .alpha > .num");
+  // Player 1's drag event => ship must be placed in player 1 board only ~
+  if (dragged.parentElement.className === "player-1-ships") {
+    // console.log("p1board touch");
+    util(p1Board, shipOrientation);
+  } else if (dragged.parentElement.className === "player-2-ships") {
+    // console.log("p2board touch");
+    util(p2Board, shipOrientation);
+  } else {
+    return;
+  }
+}
+
+function orientPlacement(shipOrientation, pId, cId, pBoard) {
+  let getElements;
+  const getParentElements = getNextParId(pId, dragged.children.length);
+  const getChildElements = getNextChildId(cId, dragged.children.length);
+
+  shipOrientation === "vertical"
+    ? (getElements = getParentElements)
+    : getChildElements;
+
+  if (getElements) {
+    // console.log(pBoard[0].parentElement.parentElement);
+    pBoard.forEach((num) => {
+      for (let i = 0; i < getElements.length; i++) {
+        if (shipOrientation === "vertical") {
+          if (
+            num.parentElement.id === getParentElements[i] &&
+            num.id === cId &&
+            !num.classList.contains("occupied")
+          ) {
+            num.classList.add("active", "occupied");
+            num.append(dragged.children[0]);
+          }
+        } else if (shipOrientation === "horizontal") {
+          if (num.parentElement.id === pId && num.id === getChildElements[i]) {
+            num.classList.add("active", "occupied");
+            num.append(dragged.children[0]);
+          }
         }
       }
-    }
+    });
+    // if (dragged.parentNode.childNodes > 0) {
+    //   dragged.parentNode.removeChild(dragged);
+    // }
+  }
+}
+
+function util(pBoard, shipOrientation) {
+  // console.log(pBoard[0].parentElement.parentElement);
+  pBoard.forEach((num) => {
+    num.addEventListener("drop", (e) => {
+      // console.log(num.parentElement.parentElement);
+      e.preventDefault();
+      let pId = e.target.parentElement.id;
+      let cId = e.target.id;
+      shipOrientation === "vertical"
+        ? orientPlacement("vertical", pId, cId, pBoard)
+        : orientPlacement("horizontal", pId, cId, pBoard);
+    });
   });
-});
+}
+
+// !!! END !!!
 
 // Get next parent element id of given current id value:
 function getNextParId(pId, length) {
@@ -496,5 +521,3 @@ function utilChangeOrient(shipOrientation) {
     }
   });
 }
-
-// ??? Placing a ship for player 2 is causing a bug.
